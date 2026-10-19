@@ -634,15 +634,41 @@ const handleQuickStockUpdate = async (productId: number, currentStock: number, d
     }
   }
 
-  // Fungsi handle upload/kamera foto produk
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+// Fungsi upload foto produk langsung ke Supabase Storage
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
-    if (file) {
-      const reader = new FileReader()
-      reader.onloadend = () => {
-        setNewImageUrl(reader.result as string)
+    if (!file) return
+
+    try {
+      setLoading(true)
+      
+      // Buat nama file yang unik berdasarkan waktu
+      const fileExt = file.name.split('.').pop()
+      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 7)}.${fileExt}`
+      const filePath = `${fileName}`
+
+      // Upload ke bucket 'product-images' di Supabase Storage
+      const { error: uploadError } = await supabase.storage
+        .from('product-images')
+        .upload(filePath, file)
+
+      if (uploadError) {
+        throw uploadError
       }
-      reader.readAsDataURL(file)
+
+      // Dapatkan Public URL dari file yang baru di-upload
+      const { data: publicUrlData } = supabase.storage
+        .from('product-images')
+        .getPublicUrl(filePath)
+
+      if (publicUrlData && publicUrlData.publicUrl) {
+        setNewImageUrl(publicUrlData.publicUrl)
+        alert('Foto berhasil diunggah ke Storage!')
+      }
+    } catch (error: any) {
+      alert('Gagal mengunggah foto: ' + (error.message || error))
+    } finally {
+      setLoading(false)
     }
   }
 
