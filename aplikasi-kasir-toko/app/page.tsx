@@ -3406,6 +3406,7 @@ onClick={() => handleOpenPayModal(d)}
 
                         {/* Kolom Stok */}
                         <td className="py-3 px-4">
+                          {userRole === 'owner' ? (
                           <div className="inline-flex items-center gap-1.5 bg-gray-50 border border-gray-200 rounded-lg p-1">
                             <button
                               type="button"
@@ -3434,6 +3435,17 @@ onClick={() => handleOpenPayModal(d)}
                               +
                             </button>
                           </div>
+                          ) : (
+                            <span className={`px-2.5 py-1 rounded-lg text-xs font-semibold ${
+                              p.stock === 0
+                                ? 'bg-rose-50 text-rose-600'
+                                : p.stock <= 5
+                                ? 'bg-amber-50 text-amber-600'
+                                : 'bg-emerald-50 text-emerald-700'
+                            }`}>
+                              {p.stock} {p.unit || 'pcs'}
+                            </span>
+                          )}
                         </td>
 
                         {/* Aksi Edit/Hapus - Khusus Owner */}
