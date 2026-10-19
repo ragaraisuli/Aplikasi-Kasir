@@ -993,22 +993,23 @@ const handleQuickStockUpdate = async (productId: number, currentStock: number, d
       if (itemsError) throw itemsError
 
       if (paymentMethod === 'Utang') {
-        const { error: debtError } = await supabase
-          .from('debts')
-          .insert([
-            {
-              transaction_id: newTransactionId,
-              customer_name: customerName.trim(),
-              customer_phone: customerPhone.trim() || null,
-              total_amount: calculation.totalAmount,
-              paid_amount: 0,
-              remaining_amount: calculation.totalAmount,
-              status: 'Belum Lunas'
-            }
-          ])
-
-        if (debtError) throw debtError
+  const { error: debtError } = await supabase
+    .from('debts')
+    .insert([
+      {
+        store_id: currentStoreId, // WAJIB ADA: Agar data terikat ke toko yang aktif
+        transaction_id: newTransactionId,
+        customer_name: customerName?.trim() || 'Pelanggan Umum',
+        customer_phone: customerPhone?.trim() || null,
+        total_amount: calculation.totalAmount,
+        paid_amount: 0,
+        remaining_amount: calculation.totalAmount,
+        status: 'Belum Lunas'
       }
+    ]);
+
+  if (debtError) throw debtError;
+}
 
       for (const item of cart) {
         const productInDb = products.find((p) => p.id === item.id)
