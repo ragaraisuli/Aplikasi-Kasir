@@ -2164,6 +2164,11 @@ const fetchCategories = async () => {
                     <div className="flex justify-between items-center">
                       <div className="flex items-center gap-2">
                         <span className="font-bold text-sm text-gray-800">{item.customer_name || 'Anonim'}</span>
+                        {item.customer_phone && (
+            <span className="text-xs text-gray-500 font-mono">
+              (📱 {item.customer_phone})
+            </span>
+          )}
                         <span className="text-xs px-2 py-0.5 rounded bg-gray-100 text-gray-600 font-medium">
                           {item.category || 'Umum'}
                         </span>
