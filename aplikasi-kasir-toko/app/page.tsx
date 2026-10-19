@@ -440,6 +440,7 @@ const handleSubmitPayment = async () => {
 useEffect(() => {
   fetchCategories();
   fetchAllTransactionItems();
+  fetchFeedbacks();
 }, [currentStoreId]);
 
   useEffect(() => {
@@ -447,6 +448,7 @@ useEffect(() => {
     fetchTransactions()
     fetchDebts()
     fetchPromos()
+    fetchFeedbacks()
   }, [])
 
   useEffect(() => {
