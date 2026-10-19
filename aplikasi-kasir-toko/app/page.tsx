@@ -2382,13 +2382,15 @@ onClick={() => handleOpenPayModal(d)}
                       className="bg-white p-3 rounded-xl shadow-sm hover:shadow-md hover:border-blue-300 transition text-left flex flex-col justify-between border border-gray-200 cursor-pointer active:scale-95"
                     >
                       <div>
-                        {product.image_url ? (
-                          <img src={product.image_url} alt={product.name} className="w-full h-24 object-cover rounded-lg mb-2 border" />
-                        ) : (
-                          <div className="w-full h-24 bg-gray-50 rounded-lg mb-2 flex items-center justify-center text-gray-400 text-[10px] border border-dashed">
-                            📸 Tanpa Foto
-                          </div>
-                        )}
+{product.image_url ? (
+  <div className="w-full h-36 bg-gray-50 rounded-lg mb-2 overflow-hidden flex items-center justify-center">
+    <img src={product.image_url} alt={product.name} className="w-full h-full object-cover" />
+  </div>
+) : (
+  <div className="w-full h-36 bg-gray-50 rounded-lg mb-2 flex items-center justify-center">
+    📷 Tanpa Foto
+  </div>
+)}
                         <p className="font-semibold text-gray-800 text-xs line-clamp-2">{product.name}</p>
                         {product.sku && <p className="text-[10px] text-blue-500 font-mono mt-0.5">SKU: {product.sku}</p>}
                         {product.barcode && <p className="text-[10px] text-gray-400 font-mono">BC: {product.barcode}</p>}
