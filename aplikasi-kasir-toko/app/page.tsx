@@ -2383,11 +2383,11 @@ onClick={() => handleOpenPayModal(d)}
                     >
                       <div>
 {product.image_url ? (
-  <div className="w-full h-36 bg-gray-50 rounded-lg mb-2 overflow-hidden flex items-center justify-center">
+  <div className="w-full h-40 bg-gray-50 rounded-lg mb-2 overflow-hidden flex items-center justify-center">
     <img src={product.image_url} alt={product.name} className="w-full h-full object-cover" />
   </div>
 ) : (
-  <div className="w-full h-36 bg-gray-50 rounded-lg mb-2 flex items-center justify-center">
+  <div className="w-full h-40 bg-gray-50 rounded-lg mb-2 flex items-center justify-center">
     📷 Tanpa Foto
   </div>
 )}
