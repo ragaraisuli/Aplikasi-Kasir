@@ -3067,77 +3067,79 @@ onClick={() => handleOpenPayModal(d)}
             </div>
           </div>
 
-          <div className="bg-indigo-50 p-6 rounded-xl shadow border border-indigo-200 mb-6">
-            <h2 className="text-lg font-bold text-indigo-900 mb-1">📦 Scan Barcode untuk Penyesuaian Stok (Tambah / Kurang)</h2>
-            <p className="text-xs text-indigo-700 mb-3">Arahkan scanner ke produk untuk menambah stok masuk atau mengurangi stok (koreksi/rusak).</p>
-            
-            <form onSubmit={handleRestockBarcodeSubmit} className="flex space-x-2 mb-4">
-              <input
-                ref={stockBarcodeInputRef}
-                type="text"
-                placeholder="Scan atau ketik barcode/SKU produk lalu Enter..."
-                value={restockInputBarcode}
-                onChange={(e) => setRestockInputBarcode(e.target.value)}
-                className="w-full px-3 py-2 border rounded-lg text-sm bg-white text-gray-800 focus:ring-2 focus:ring-indigo-500 font-mono"
-              />
-              <button
-                type="submit"
-                className="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg text-sm whitespace-nowrap shadow"
-              >
-                Cari Barcode
-              </button>
-            </form>
+{userRole === 'owner' && (
+  <div className="bg-indigo-50 p-6 rounded-xl shadow border border-indigo-200 mb-6">
+    <h2 className="text-lg font-bold text-indigo-900 mb-1">📦 Scan Barcode untuk Penyesuaian Stok (Tambah / Kurang)</h2>
+    <p className="text-xs text-indigo-700 mb-3">Arahkan scanner ke produk untuk menambah stok masuk atau mengurangi stok (koreksi/rusak).</p>
+    
+    <form onSubmit={handleRestockBarcodeSubmit} className="flex space-x-2 mb-4">
+      <input
+        ref={stockBarcodeInputRef}
+        type="text"
+        placeholder="Scan atau ketik barcode/SKU produk lalu Enter..."
+        value={restockInputBarcode}
+        onChange={(e) => setRestockInputBarcode(e.target.value)}
+        className="w-full px-3 py-2 border rounded-lg text-sm bg-white text-gray-800 focus:ring-2 focus:ring-indigo-500 font-mono"
+      />
+      <button
+        type="submit"
+        className="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg text-sm whitespace-nowrap shadow"
+      >
+        Cari Barcode
+      </button>
+    </form>
 
-            {scannedRestockProduct && (
-              <div className="bg-white p-4 rounded-lg border border-indigo-300 flex flex-col md:flex-row items-start md:items-center justify-between shadow-sm gap-4">
-                <div>
-                  <p className="text-xs text-gray-500">Produk Ditemukan:</p>
-                  <p className="font-bold text-gray-800 text-base">{scannedRestockProduct.name}</p>
-                  <p className="text-xs text-blue-600 font-semibold">Stok Saat Ini: {scannedRestockProduct.stock} {scannedRestockProduct.unit || 'pcs'}</p>
-                </div>
-                <form onSubmit={handleUpdateStockOnly} className="flex items-center space-x-2">
-                  <div>
-                    <label className="block text-[10px] font-semibold text-gray-500 mb-0.5">Aksi</label>
-                    <select
-                      value={restockType}
-                      onChange={(e) => setRestockType(e.target.value as 'add' | 'reduce')}
-                      className="px-2 py-1.5 border rounded-lg text-xs bg-white text-gray-800 font-bold"
-                    >
-                      <option value="add">Tambah (+)</option>
-                      <option value="reduce">Kurang (-)</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-[10px] font-semibold text-gray-500 mb-0.5">Jumlah (Bulat)</label>
-                    <input
-                      type="number"
-                      step="1"
-                      min="1"
-                      placeholder="Contoh: 2"
-                      value={restockQty}
-                      onChange={(e) => setRestockQty(e.target.value)}
-                      className="w-24 px-3 py-1.5 border rounded-lg text-sm bg-white text-gray-800 focus:ring-2 focus:ring-indigo-500 font-bold"
-                      autoFocus
-                    />
-                  </div>
-                  <button
-                    type="submit"
-                    disabled={loading}
-                    className="mt-4 px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg text-sm shadow"
-                  >
-                    {loading ? 'Menyimpan...' : 'Simpan'}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => { setScannedRestockProduct(null); setRestockQty(''); }}
-                    className="mt-4 px-3 py-1.5 bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold rounded-lg text-sm"
-                  >
-                    Batal
-                  </button>
-                </form>
-              </div>
-            )}
+    {scannedRestockProduct && (
+      <div className="bg-white p-4 rounded-lg border border-indigo-300 flex flex-col md:flex-row items-start md:items-center justify-between shadow-sm gap-4">
+        <div>
+          <p className="text-xs text-gray-500">Produk Ditemukan:</p>
+          <p className="font-bold text-gray-800 text-base">{scannedRestockProduct.name}</p>
+          <p className="text-xs text-blue-600 font-semibold">Stok Saat Ini: {scannedRestockProduct.stock} {scannedRestockProduct.unit || 'pcs'}</p>
+        </div>
+        <form onSubmit={handleUpdateStockOnly} className="flex items-center space-x-2">
+          <div>
+            <label className="block text-[10px] font-semibold text-gray-500 mb-0.5">Aksi</label>
+            <select
+              value={restockType}
+              onChange={(e) => setRestockType(e.target.value as 'add' | 'reduce')}
+              className="px-2 py-1.5 border rounded-lg text-xs bg-white text-gray-800 font-bold"
+            >
+              <option value="add">Tambah (+)</option>
+              <option value="reduce">Kurang (-)</option>
+            </select>
           </div>
+          <div>
+            <label className="block text-[10px] font-semibold text-gray-500 mb-0.5">Jumlah (Bulat)</label>
+            <input
+              type="number"
+              step="1"
+              min="1"
+              placeholder="Contoh: 2"
+              value={restockQty}
+              onChange={(e) => setRestockQty(e.target.value)}
+              className="w-24 px-3 py-1.5 border rounded-lg text-sm bg-white text-gray-800 focus:ring-2 focus:ring-indigo-500 font-bold"
+              autoFocus
+            />
+          </div>
+          <button
+            type="submit"
+            disabled={loading}
+            className="mt-4 px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg text-sm shadow"
+          >
+            {loading ? 'Menyimpan...' : 'Simpan'}
+          </button>
+          <button
+            type="button"
+            onClick={() => { setScannedRestockProduct(null); setRestockQty(''); }}
+            className="mt-4 px-3 py-1.5 bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold rounded-lg text-sm"
+          >
+            Batal
+          </button>
+        </form>
+      </div>
+    )}
+  </div>
+)}
 
           <div className="bg-white p-6 rounded-xl shadow border border-gray-200 mb-8">
             <div className="flex justify-between items-center mb-4">
