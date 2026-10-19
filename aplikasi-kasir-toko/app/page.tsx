@@ -1420,6 +1420,8 @@ const fetchCategories = async () => {
   {storeProfile.store_name || 'POS SaaS Toko'}
 </h1>
           <div className="flex bg-gray-100 p-1 rounded-lg">
+            {/* Tombol Dashboard HANYA TAMPIL UNTUK OWNER */}
+  {userRole === 'owner' && (
             <button
               onClick={() => handleTabChange('dashboard')}
               className={`px-4 py-1.5 rounded-md text-sm font-medium transition ${
@@ -1428,6 +1430,7 @@ const fetchCategories = async () => {
             >
               Dashboard
             </button>
+            )}
             <button
               onClick={() => handleTabChange('reports')}
               className={`px-4 py-1.5 rounded-md text-sm font-medium transition ${
