@@ -75,7 +75,13 @@ type Category = {
 }
 
 export default function KasirPage() {
- const [activeTab, setActiveTab] = useState<'dashboard' | 'pos' | 'products' | 'reports' | 'debts' | 'promos' | 'profile' | 'voc'>('dashboard');
+ const [activeTab, setActiveTab] = useState(() => {
+  if (typeof window !== 'undefined') {
+    const hash = window.location.hash.replace('#', '');
+    if (hash) return hash;
+  }
+  return 'dashboard'; // Default jika tidak ada hash di URL
+});
   const [products, setProducts] = useState<Product[]>([])
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [debts, setDebts] = useState<Debt[]>([])
@@ -281,6 +287,11 @@ const fetchStoreProfile = async () => {
 useEffect(() => {
   fetchStoreProfile();
 }, []);
+
+const handleTabChange = (tab: string) => {
+  setActiveTab(tab);
+  window.location.hash = tab; // Mengubah URL menjadi #pos, #products, dll.
+};
 
 const handleSaveProfile = async (e: React.FormEvent) => {
   e.preventDefault();
