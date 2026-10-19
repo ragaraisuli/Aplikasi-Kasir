@@ -1543,15 +1543,10 @@ const fetchCategories = async () => {
 
           </div>
         </div>
-        <div className="flex items-center space-x-2">
-          <span className="text-sm text-gray-500">Kasir:</span>
-          <input
-            type="text"
-            value={cashierName}
-            onChange={(e) => setCashierName(e.target.value)}
-            className="text-sm border px-2 py-1 rounded w-32 text-gray-700 bg-gray-50 font-semibold"/>
-        
-
+<div className="flex items-center space-x-2">
+  <span className="text-sm font-medium text-gray-700">
+    {userRole === 'owner' ? 'Owner:' : 'Kasir:'} <span className="font-bold text-gray-900">{userName || cashierName}</span>        
+</span>
         <button
   onClick={handleLogout}
   className="px-3 py-1 bg-red-50 hover:bg-red-100 text-red-600 text-xs font-semibold rounded-lg border border-red-200 transition"
