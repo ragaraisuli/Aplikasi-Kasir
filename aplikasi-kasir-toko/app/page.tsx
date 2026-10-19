@@ -290,6 +290,13 @@ const fetchStoreProfile = async () => {
   }
 };
 
+const handleTabChange = (tab: string) => {
+  setActiveTab(tab);
+  if (typeof window !== 'undefined') {
+    window.location.hash = tab;
+  }
+};
+
 useEffect(() => {
   fetchStoreProfile();
 }, []);
@@ -1258,7 +1265,7 @@ const fetchCategories = async () => {
 </h1>
           <div className="flex bg-gray-100 p-1 rounded-lg">
             <button
-              onClick={() => setActiveTab('dashboard')}
+              onClick={() => handleTabChange('dashboard')}
               className={`px-4 py-1.5 rounded-md text-sm font-medium transition ${
                 activeTab === 'dashboard' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-600 hover:text-gray-900'
               }`}
@@ -1266,7 +1273,7 @@ const fetchCategories = async () => {
               Dashboard
             </button>
             <button
-              onClick={() => setActiveTab('reports')}
+              onClick={() => handleTabChange('reports')}
               className={`px-4 py-1.5 rounded-md text-sm font-medium transition ${
                 activeTab === 'reports' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-600 hover:text-gray-900'
               }`}
@@ -1274,7 +1281,7 @@ const fetchCategories = async () => {
               Laporan & Riwayat
             </button>
             <button
-              onClick={() => setActiveTab('debts')}
+              onClick={() => handleTabChange('debts')}
               className={`px-4 py-1.5 rounded-md text-sm font-medium transition ${
                 activeTab === 'debts' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-600 hover:text-gray-900'
               }`}
@@ -1282,7 +1289,7 @@ const fetchCategories = async () => {
               Utang Piutang
             </button>
             <button
-              onClick={() => setActiveTab('promos')}
+              onClick={() => handleTabChange('promos')}
               className={`px-4 py-1.5 rounded-md text-sm font-medium transition ${
                 activeTab === 'promos' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-600 hover:text-gray-900'
               }`}
@@ -1290,7 +1297,7 @@ const fetchCategories = async () => {
               Diskon & Promo
             </button>
             <button
-              onClick={() => setActiveTab('pos')}
+              onClick={() => handleTabChange('pos')}
               className={`px-4 py-1.5 rounded-md text-sm font-medium transition ${
                 activeTab === 'pos' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-600 hover:text-gray-900'
               }`}
@@ -1298,7 +1305,7 @@ const fetchCategories = async () => {
               Kasir (POS)
             </button>
             <button
-              onClick={() => setActiveTab('products')}
+              onClick={() => handleTabChange('products')}
               className={`px-4 py-1.5 rounded-md text-sm font-medium transition ${
                 activeTab === 'products' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-600 hover:text-gray-900'
               }`}
@@ -1310,7 +1317,7 @@ const fetchCategories = async () => {
 {userRole === 'owner' && (
   <>
     <button
-      onClick={() => setActiveTab('voc')}
+      onClick={() => handleTabChange('voc')}
       className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition ${
         activeTab === 'voc' 
           ? 'bg-blue-600 text-white shadow-sm' 
@@ -1321,7 +1328,7 @@ const fetchCategories = async () => {
     </button>
 
     <button
-      onClick={() => setActiveTab('profile')}
+      onClick={() => handleTabChange('profile')}
       className={`px-4 py-1.5 rounded-md text-sm font-medium transition ${
         activeTab === 'profile' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-600'
       }`}
