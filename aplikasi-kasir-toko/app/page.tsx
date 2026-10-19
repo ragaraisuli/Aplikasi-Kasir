@@ -289,9 +289,11 @@ useEffect(() => {
 }, []);
 
 const handleTabChange = (tab: string) => {
-  setActiveTab(tab);
-  window.location.hash = tab; // Mengubah URL menjadi #pos, #products, dll.
-};
+    setActiveTab(tab);
+    if (typeof window !== 'undefined') {
+      window.location.hash = tab;
+    }
+  };
 
 const handleSaveProfile = async (e: React.FormEvent) => {
   e.preventDefault();
