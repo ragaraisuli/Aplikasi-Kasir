@@ -1936,7 +1936,7 @@ const fetchCategories = async () => {
               <p className="text-xs font-bold text-gray-700 mb-2">QR Code Form Feedback Toko</p>
               <img
                 src={`https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(
-                  'https://app-kasirl.vercel.app/#voc'
+                  'https://app-kasirl.vercel.app/feedback'
                 )}`}
                 alt="QR Code Feedback"
                 className="w-28 h-28 rounded shadow-sm border"
