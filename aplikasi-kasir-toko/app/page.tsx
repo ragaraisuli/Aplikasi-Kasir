@@ -1931,12 +1931,12 @@ const fetchCategories = async () => {
               </p>
             </div>
 
-            {/* Box QR Code untuk dipajang di kasir */}
+{/* Box QR Code untuk dipajang di kasir */}
             <div className="p-4 bg-gray-50 rounded-lg border border-dashed border-gray-300 text-center flex flex-col items-center">
               <p className="text-xs font-bold text-gray-700 mb-2">QR Code Form Feedback Toko</p>
               <img
                 src={`https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(
-                  typeof window !== 'undefined' ? `\${window.location.origin}/feedback` : ''
+                  'https://app-kasirl.vercel.app/#voc'
                 )}`}
                 alt="QR Code Feedback"
                 className="w-28 h-28 rounded shadow-sm border"
