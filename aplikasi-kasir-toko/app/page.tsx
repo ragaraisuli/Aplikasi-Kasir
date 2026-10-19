@@ -115,15 +115,17 @@ const handleMenuClick = (tabName: string) => {
       try {
         const { data: { user } } = await supabase.auth.getUser();
         if (user) {
-          const { data: profile, error } = await supabase
-            .from('profiles')
-            .select('role')
-            .eq('id', user.id)
-            .single();
+         const { data: profile, error } = await supabase
+  .from('profiles')
+  .select('role, store_id, full_name')
+  .eq('id', user.id)
+  .single();
 
-          if (profile && profile.role) {
-            setUserRole(profile.role.toLowerCase() === 'owner' ? 'owner' : 'kasir');
-          }
+if (profile) {
+  setUserRole(profile.role?.toLowerCase() === 'owner' ? 'owner' : 'kasir');
+  if (profile.store_id) setCurrentStoreId(profile.store_id);
+  if (profile.full_name) setUserName(profile.full_name); // Set nama sesuai akun login
+}
         }
       } catch (err) {
         console.error('Gagal memuat role pengguna:', err);
@@ -245,7 +247,7 @@ useEffect(() => {
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null)
 
   const [barcodeInput, setBarcodeInput] = useState('')
-  const [cashierName, setCashierName] = useState('Kasir 1')
+  const [cashierName, setCashierName] = useState('Kasir')
   const [loading, setLoading] = useState(false)
 
   const barcodeInputRef = useRef<HTMLInputElement>(null)
@@ -268,6 +270,7 @@ useEffect(() => {
   const [newCategory, setNewCategory] = useState('Sembako')
   const [newImageUrl, setNewImageUrl] = useState('')
 
+  const [userName, setUserName] = useState('Pengguna');
 
 // Fungsi untuk mengunduh laporan ke file CSV (Format standar Excel Indonesia menggunakan titik koma ;)
   const exportToCSV = () => {
@@ -1944,7 +1947,7 @@ const fetchCategories = async () => {
                   const rows = filteredTransactions.map(t => [
                     `"${t.id}"`,
                     `"${new Date(t.created_at).toLocaleString('id-ID')}"`,
-                    `"${t.cashier_name || 'Kasir 1'}"`,
+                    `"${t.cashier_name || userName}"`,
                     `"${t.payment_method === 'Utang' ? 'Belum Lunas' : t.payment_method || 'Tunai'}"`,
                     `"${t.total_amount || 0}"`
                   ]);
@@ -2033,7 +2036,7 @@ const fetchCategories = async () => {
                         <td className="py-3 px-4 font-mono font-bold text-blue-600 truncate max-w-[120px]">#{t.id}</td>
                         <td className="py-3 px-4 text-gray-600">{new Date(t.created_at).toLocaleString('id-ID')}</td>
                         <td className="py-3 px-4">
-                          <span className="bg-gray-100 px-2 py-1 rounded text-xs font-semibold">{t.cashier_name || 'Kasir 1'}</span>
+                          <span className="bg-gray-100 px-2 py-1 rounded text-xs font-semibold">{t.cashier_name || userName}</span>
                         </td>
                         <td className="py-3 px-4">
                           <span className={`px-2 py-1 rounded text-xs font-bold ${t.payment_method === 'Utang' ? 'bg-red-50 text-red-600' : t.payment_method === 'QRIS' ? 'bg-purple-50 text-purple-600' : t.payment_method === 'Transfer' ? 'bg-indigo-50 text-indigo-600' : 'bg-green-50 text-green-600'}`}>
@@ -3377,7 +3380,7 @@ onClick={() => handleOpenPayModal(d)}
             <div className="space-y-1 text-xs text-gray-600 border-b border-dashed pb-3">
               <p><span className="font-semibold">ID Transaksi:</span> #{selectedTransaction.id}</p>
               <p><span className="font-semibold">Waktu:</span> {new Date(selectedTransaction.created_at).toLocaleString('id-ID')}</p>
-              <p><span className="font-semibold">Kasir:</span> {selectedTransaction.cashier_name || 'Kasir 1'}</p>
+              <p><span className="font-semibold">Kasir:</span> {selectedTransaction.cashier_name || userName}</p>
               <p>
                 <span className="font-semibold">Metode Pembayaran:</span>{' '}
                 <span className="font-bold text-blue-600">
