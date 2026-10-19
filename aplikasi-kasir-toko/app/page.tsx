@@ -176,8 +176,49 @@ const handleMenuClick = (tabName: string) => {
     total: dailySalesMap[date]
   })).slice(-7)
 
-  // Contoh jika mengambil ID atau nama toko dari sesi login / state aktif
-  const currentStoreId = 'toko-pusat'
+ // State untuk ID Toko Aktif (Multi-Tenant)
+  const [currentStoreId, setCurrentStoreId] = useState<string | null>(null);
+
+  // Ambil profil user yang sedang login (role & store_id)
+useEffect(() => {
+    if (currentStoreId) {
+      fetchCategories();
+      fetchAllTransactionItems();
+      fetchFeedbacks();
+      fetchProducts();
+      fetchTransactions();
+      fetchDebts();
+      fetchPromos();
+    }
+  }, [currentStoreId]);
+
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          const { data: profile, error } = await supabase
+            .from('profiles')
+            .select('role, store_id')
+            .eq('id', user.id)
+            .single();
+
+          if (profile) {
+            setUserRole(profile.role?.toLowerCase() === 'owner' ? 'owner' : 'kasir');
+            if (profile.store_id) {
+              setCurrentStoreId(profile.store_id);
+            }
+          }
+        }
+      } catch (err) {
+        console.error('Gagal memuat profil pengguna:', err);
+      } finally {
+        setLoadingRole(false);
+      }
+    };
+
+    fetchUserProfile();
+  }, []);
   
   // State Pencarian & Filter
   const [searchTerm, setSearchTerm] = useState('')
@@ -294,6 +335,67 @@ const handleTabChange = (tab: string) => {
   setActiveTab(tab);
   if (typeof window !== 'undefined') {
     window.location.hash = tab;
+  }
+};
+
+// State Form Tambah Staf / Kasir Baru
+const [staffName, setStaffName] = useState('');
+const [staffEmail, setStaffEmail] = useState('');
+const [staffPassword, setStaffPassword] = useState('');
+const [registeringStaff, setRegisteringStaff] = useState(false);
+
+const handleRegisterStaff = async (e: React.FormEvent) => {
+  e.preventDefault();
+  if (!staffEmail || !staffPassword || !staffName) {
+    return alert('Harap isi Nama, Email, dan Password kasir!');
+  }
+
+  if (staffPassword.length < 6) {
+    return alert('Password minimal 6 karakter!');
+  }
+
+  setRegisteringStaff(true);
+  try {
+    // 1. Buat user auth baru di Supabase
+    const { data: authData, error: authError } = await supabase.auth.signUp({
+      email: staffEmail,
+      password: staffPassword,
+      options: {
+        data: {
+          full_name: staffName,
+          role: 'kasir',
+          store_id: storeProfile.id || null,
+        },
+      },
+    });
+
+    if (authError) throw authError;
+
+    // 2. Simpan/Sync data profil ke tabel 'profiles'
+    if (authData.user) {
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .upsert([
+          {
+            id: authData.user.id,
+            email: staffEmail,
+            full_name: staffName,
+            role: 'kasir',
+            store_id: storeProfile.id || null,
+          },
+        ]);
+
+      if (profileError) console.error('Gagal simpan profil:', profileError.message);
+    }
+
+    alert(`Berhasil mendaftarkan akun kasir baru untuk "${staffName}"!\nEmail: ${staffEmail}`);
+    setStaffName('');
+    setStaffEmail('');
+    setStaffPassword('');
+  } catch (err: any) {
+    alert('Gagal menambah akun kasir: ' + (err.message || err));
+  } finally {
+    setRegisteringStaff(false);
   }
 };
 
@@ -436,6 +538,11 @@ const handleSubmitPayment = async () => {
     }
   };
 
+const handleLogout = async () => {
+  await supabase.auth.signOut();
+  window.location.href = '/login';
+};
+
   // Panggil fungsi ini di dalam useEffect utama saat komponen pertama kali dirender
 useEffect(() => {
   fetchCategories();
@@ -451,6 +558,16 @@ useEffect(() => {
     fetchFeedbacks()
   }, [])
 
+useEffect(() => {
+  const checkAuth = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      window.location.href = '/login';
+    }
+  };
+  checkAuth();
+}, []);
+
   useEffect(() => {
     if (activeTab === 'pos' && barcodeInputRef.current) {
       barcodeInputRef.current.focus()
@@ -459,44 +576,52 @@ useEffect(() => {
     }
   }, [activeTab])
 
-  async function fetchProducts() {
-    const { data, error } = await supabase.from('products').select('*').order('id', { ascending: false })
-    if (error) {
-      console.error('Gagal memuat produk:', error.message)
-    } else if (data) {
-      setProducts(data)
-    }
+ async function fetchProducts() {
+    if (!currentStoreId) return;
+    const { data, error } = await supabase
+      .from('products')
+      .select('*')
+      .eq('store_id', currentStoreId)
+      .order('id', { ascending: false });
+
+    if (error) console.error('Gagal memuat produk:', error.message);
+    else if (data) setProducts(data);
   }
 
 async function fetchTransactions() {
+    if (!currentStoreId) return;
     const { data, error } = await supabase
       .from('transactions')
       .select('*, transaction_items(*)')
+      .eq('store_id', currentStoreId)
       .order('created_at', { ascending: false });
       
-    if (error) {
-      console.error('Gagal memuat transaksi:', error.message);
-    } else if (data) {
-      setTransactions(data);
-    }
+    if (error) console.error('Gagal memuat transaksi:', error.message);
+    else if (data) setTransactions(data);
   }
 
   async function fetchDebts() {
-    const { data, error } = await supabase.from('debts').select('*').order('created_at', { ascending: false })
-    if (error) {
-      console.error('Gagal memuat data utang:', error.message)
-    } else if (data) {
-      setDebts(data)
-    }
+    if (!currentStoreId) return;
+    const { data, error } = await supabase
+      .from('debts')
+      .select('*')
+      .eq('store_id', currentStoreId)
+      .order('created_at', { ascending: false });
+
+    if (error) console.error('Gagal memuat data utang:', error.message);
+    else if (data) setDebts(data);
   }
 
   async function fetchPromos() {
-    const { data, error } = await supabase.from('promos').select('*').order('id', { ascending: false })
-    if (error) {
-      console.error('Gagal memuat data promo:', error.message)
-    } else if (data) {
-      setPromos(data)
-    }
+    if (!currentStoreId) return;
+    const { data, error } = await supabase
+      .from('promos')
+      .select('*')
+      .eq('store_id', currentStoreId)
+      .order('id', { ascending: false });
+
+    if (error) console.error('Gagal memuat data promo:', error.message);
+    else if (data) setPromos(data);
   }
 
   async function fetchTransactionItems(transactionId: string) {
@@ -801,6 +926,7 @@ const handleQuickStockUpdate = async (productId: number, currentStock: number, d
             total_amount: calculation.totalAmount,
             cashier_name: cashierName,
             payment_method: paymentMethod,
+            store_id: currentStoreId,
           },
         ])
         .select()
@@ -909,7 +1035,8 @@ const handleQuickStockUpdate = async (productId: number, currentStock: number, d
           product_ids: newTargetType === 'specific' ? newPromoProductIds : null,
           payment_method: newPromoPaymentMethod,
           promo_code: newPromoCode.trim() || null,
-          is_active: true
+          is_active: true,
+          store_id: currentStoreId,
         }
       ])
 
@@ -1089,6 +1216,7 @@ const fetchCategories = async () => {
         barcode: newBarcode || null,
         category: newCategory,
         image_url: newImageUrl || null,
+        store_id: currentStoreId,
       }
 
       if (editingId === null) {
@@ -1375,7 +1503,15 @@ const fetchCategories = async () => {
             value={cashierName}
             onChange={(e) => setCashierName(e.target.value)}
             className="text-sm border px-2 py-1 rounded w-32 text-gray-700 bg-gray-50 font-semibold"/>
-        </div>
+        
+
+        <button
+  onClick={handleLogout}
+  className="px-3 py-1 bg-red-50 hover:bg-red-100 text-red-600 text-xs font-semibold rounded-lg border border-red-200 transition"
+>
+  🚪 Logout
+</button>
+</div>
       </header>
 
 
@@ -2006,61 +2142,131 @@ const fetchCategories = async () => {
         </div>
       )} 
 
-      {activeTab === 'profile' && (
-        <div className="max-w-2xl mx-auto bg-white p-6 rounded-2xl shadow-sm border border-gray-200 space-y-6">
+{activeTab === 'profile' && (
+  <div className="flex-1 p-8 max-w-2xl mx-auto w-full overflow-y-auto space-y-6 text-left">
+    
+    {/* 1. Form Pengaturan Profil Toko */}
+    <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 space-y-6">
+      <div>
+        <h2 className="text-xl font-bold text-gray-800">⚙️ Pengaturan Profil Toko</h2>
+        <p className="text-xs text-gray-500">
+          Informasi ini akan otomatis tercetak pada struk pembayaran pelanggan.
+        </p>
+      </div>
+
+      <form onSubmit={handleSaveProfile} className="space-y-4">
+        <div>
+          <label className="block text-xs font-semibold text-gray-700 mb-1">Nama Toko</label>
+          <input
+            type="text"
+            value={storeProfile.store_name || ''}
+            onChange={(e) => setStoreProfile({ ...storeProfile, store_name: e.target.value })}
+            placeholder="Contoh: Toko Barokah Jaya"
+            className="w-full border border-gray-300 rounded-xl p-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-500 text-gray-800"
+            required
+          />
+        </div>
+
+        <div>
+          <label className="block text-xs font-semibold text-gray-700 mb-1">Alamat Toko</label>
+          <textarea
+            value={storeProfile.address || ''}
+            onChange={(e) => setStoreProfile({ ...storeProfile, address: e.target.value })}
+            placeholder="Contoh: Jl. Merdeka No. 45, Jakarta"
+            className="w-full border border-gray-300 rounded-xl p-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-500 text-gray-800"
+            rows={2}
+            required
+          />
+        </div>
+
+        <div>
+          <label className="block text-xs font-semibold text-gray-700 mb-1">No. Telepon / WhatsApp</label>
+          <input
+            type="text"
+            value={storeProfile.phone || ''}
+            onChange={(e) => setStoreProfile({ ...storeProfile, phone: e.target.value })}
+            placeholder="Contoh: 0812-3456-7890"
+            className="w-full border border-gray-300 rounded-xl p-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-500 text-gray-800"
+            required
+          />
+        </div>
+
+        <button
+          type="submit"
+          className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-sm shadow transition-colors"
+        >
+          💾 Simpan Perubahan Profil
+        </button>
+      </form>
+    </div>
+
+    {/* 2. Form Tambah Staf / Kasir Baru (Khusus Owner) */}
+    {userRole === 'owner' && (
+      <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 space-y-4">
+        <div>
+          <h3 className="text-lg font-bold text-gray-800">👥 Tambah Akun Staf / Kasir Baru</h3>
+          <p className="text-xs text-gray-500 mt-0.5">
+            Daftarkan akun kasir baru agar karyawan Anda dapat login dan bertransaksi secara aman.
+          </p>
+        </div>
+
+        <form onSubmit={handleRegisterStaff} className="space-y-4 pt-2 border-t">
           <div>
-            <h2 className="text-xl font-bold text-gray-800">⚙️ Pengaturan Profil Toko</h2>
-            <p className="text-xs text-gray-500">
-              Informasi ini akan otomatis tercetak pada struk pembayaran pelanggan.
-            </p>
+            <label className="block text-xs font-semibold text-gray-700 mb-1">
+              Nama Lengkap Kasir / Staf
+            </label>
+            <input
+              type="text"
+              required
+              value={staffName}
+              onChange={(e) => setStaffName(e.target.value)}
+              placeholder="Contoh: Budi Santoso"
+              className="w-full border border-gray-300 rounded-xl p-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-500 text-gray-800"
+            />
           </div>
 
-          <form onSubmit={handleSaveProfile} className="space-y-4">
-            <div>
-              <label className="block text-xs font-semibold text-gray-700 mb-1">Nama Toko</label>
-              <input
-                type="text"
-                value={storeProfile.store_name || ''}
-                onChange={(e) => setStoreProfile({ ...storeProfile, store_name: e.target.value })}
-                placeholder="Contoh: Toko Barokah Jaya"
-                className="w-full border border-gray-300 rounded-xl p-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              />
-            </div>
+          <div>
+            <label className="block text-xs font-semibold text-gray-700 mb-1">
+              Email Kasir
+            </label>
+            <input
+              type="email"
+              required
+              value={staffEmail}
+              onChange={(e) => setStaffEmail(e.target.value)}
+              placeholder="kasir.budi@toko.com"
+              className="w-full border border-gray-300 rounded-xl p-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-500 text-gray-800"
+            />
+          </div>
 
-            <div>
-              <label className="block text-xs font-semibold text-gray-700 mb-1">Alamat Toko</label>
-              <textarea
-                value={storeProfile.address || ''}
-                onChange={(e) => setStoreProfile({ ...storeProfile, address: e.target.value })}
-                placeholder="Contoh: Jl. Merdeka No. 45, Jakarta"
-                className="w-full border border-gray-300 rounded-xl p-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-500"
-                rows={2}
-                required
-              />
-            </div>
+          <div>
+            <label className="block text-xs font-semibold text-gray-700 mb-1">
+              Password Kasir
+            </label>
+            <input
+              type="password"
+              required
+              value={staffPassword}
+              onChange={(e) => setStaffPassword(e.target.value)}
+              placeholder="Minimal 6 karakter"
+              className="w-full border border-gray-300 rounded-xl p-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-500 text-gray-800"
+            />
+          </div>
 
-            <div>
-              <label className="block text-xs font-semibold text-gray-700 mb-1">No. Telepon / WhatsApp</label>
-              <input
-                type="text"
-                value={storeProfile.phone || ''}
-                onChange={(e) => setStoreProfile({ ...storeProfile, phone: e.target.value })}
-                placeholder="Contoh: 0812-3456-7890"
-                className="w-full border border-gray-300 rounded-xl p-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              />
-            </div>
+          <button
+            type="submit"
+            disabled={registeringStaff}
+            className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-sm shadow transition-colors disabled:bg-gray-300"
+          >
+            {registeringStaff ? 'Mendaftarkan Akun Kasir...' : '➕ Buatkan Akun Kasir'}
+          </button>
+        </form>
+      </div>
+    )}
 
-            <button
-              type="submit"
-              className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-sm shadow transition-colors"
-            >
-              💾 Simpan Perubahan Profil
-            </button>
-          </form>
-        </div>
-      )}
+  </div>
+)}
+
       {activeTab === 'debts' && (
         <div className="flex-1 p-8 max-w-6xl mx-auto w-full overflow-y-auto space-y-6">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center bg-white p-6 rounded-xl shadow-sm border border-gray-200 gap-4">
