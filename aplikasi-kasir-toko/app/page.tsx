@@ -95,6 +95,12 @@ export default function KasirPage() {
   const [isPayModalOpen, setIsPayModalOpen] = useState(false)
   const [selectedDebt, setSelectedDebt] = useState<any>(null)
   const [paymentInput, setPaymentInput] = useState('')
+
+const handleMenuClick = (tabName: string) => {
+    setActiveTab(tabName);
+    window.location.hash = tabName; // Ini yang menjaga agar posisi tab terekam di URL saat di-refresh!
+  };
+
 // Letakkan state ini di bagian atas komponen bersama state lainnya
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
@@ -288,12 +294,15 @@ useEffect(() => {
   fetchStoreProfile();
 }, []);
 
-const handleTabChange = (tab: string) => {
-    setActiveTab(tab);
-    if (typeof window !== 'undefined') {
-      window.location.hash = tab;
+const handleHashChange = () => {
+      const hash = window.location.hash.replace('#', '');
+      if (hash) {
+        setActiveTab(hash);
+      }
+    // Jalankan saat pertama kali muat & dengarkan perubahan hash
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
     }
-  };
 
 const handleSaveProfile = async (e: React.FormEvent) => {
   e.preventDefault();
