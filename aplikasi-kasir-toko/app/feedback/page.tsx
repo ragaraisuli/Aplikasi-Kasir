@@ -4,6 +4,7 @@ import { supabase } from '@/lib/supabase'; // Sesuaikan path supabase client And
 
 export default function PublicFeedbackPage() {
   const [name, setName] = useState('');
+  const [phone, setPhone] = useState('');
   const [rating, setRating] = useState(5);
   const [category, setCategory] = useState('Pelayanan');
   const [message, setMessage] = useState('');
@@ -18,6 +19,7 @@ export default function PublicFeedbackPage() {
     const { error } = await supabase.from('customer_feedbacks').insert([
       {
         customer_name: name || 'Anonim',
+        customer_phone: phone.trim() || null, // Dikirim ke kolom customer_phone
         rating,
         category,
         message,
@@ -62,6 +64,17 @@ export default function PublicFeedbackPage() {
               placeholder="Kosongkan jika ingin anonim"
               value={name}
               onChange={(e) => setName(e.target.value)}
+              className="w-full p-2.5 border rounded-lg text-xs focus:ring-2 focus:ring-blue-500 outline-none"
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs font-semibold text-gray-700 mb-1">No. HP / WhatsApp (Opsional)</label>
+            <input
+              type="tel"
+              placeholder="Contoh: 081234567890"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
               className="w-full p-2.5 border rounded-lg text-xs focus:ring-2 focus:ring-blue-500 outline-none"
             />
           </div>
