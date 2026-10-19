@@ -1491,6 +1491,7 @@ const fetchCategories = async () => {
             >
               Utang Piutang
             </button>
+            {userRole === 'owner' && (
             <button
               onClick={() => handleTabChange('promos')}
               className={`px-4 py-1.5 rounded-md text-sm font-medium transition ${
@@ -1499,6 +1500,7 @@ const fetchCategories = async () => {
             >
               Diskon & Promo
             </button>
+            )}
             <button
               onClick={() => handleTabChange('pos')}
               className={`px-4 py-1.5 rounded-md text-sm font-medium transition ${
@@ -3343,20 +3345,22 @@ onClick={() => handleOpenPayModal(d)}
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
-<tr className="border-b bg-gray-50 text-gray-600 text-xs uppercase">
-      <th className="py-3 px-4">Foto</th>
-      <th className="py-3 px-4">SKU / Barcode / Nama</th>
-      <th className="py-3 px-4">Kategori</th>
-      
-      {/* Kolom Harga Beli - Hanya Owner */}
-      {userRole === 'owner' && <th className="py-3 px-4">Harga Beli</th>}
-      
-      <th className="py-3 px-4">Harga Jual</th>
-      <th className="py-3 px-4">Stok</th>
-      
-      {/* Kolom Aksi Edit/Hapus - Hanya Owner */}
-      {userRole === 'owner' && <th className="py-3 px-4 text-center">Aksi</th>}
-    </tr>
+                  <tr className="border-b bg-gray-50 text-gray-600 text-xs uppercase">
+                    <th className="py-3 px-4">Foto</th>
+                    <th className="py-3 px-4">SKU / Barcode / Nama</th>
+                    <th className="py-3 px-4">Kategori</th>
+                    
+                    {/* Kolom Harga Beli - Hanya Owner */}
+                    {userRole === 'owner' && <th className="py-3 px-4">Harga Beli</th>}
+                    
+                    {/* Kolom Harga Jual - Tampil untuk Owner maupun Kasir */}
+                    <th className="py-3 px-4">Harga Jual</th>
+                    
+                    <th className="py-3 px-4">Stok</th>
+                    
+                    {/* Kolom Aksi Edit/Hapus - Hanya Owner */}
+                    {userRole === 'owner' && <th className="py-3 px-4 text-center">Aksi</th>}
+                  </tr>
                 </thead>
                 <tbody className="divide-y text-sm text-gray-700">
                   {filteredTableProducts.length === 0 ? (
@@ -3388,17 +3392,19 @@ onClick={() => handleOpenPayModal(d)}
                           <span className="bg-gray-100 px-2 py-1 rounded">{p.category || 'Umum'}</span>
                         </td>
 
+                        {/* Harga Beli - Khusus Owner */}
                         {userRole === 'owner' && (
-                          <>
-                            <td className="py-3 px-4 text-gray-500">
-                              Rp {(p.buy_price ?? 0).toLocaleString('id-ID')}
-                            </td>
-                            <td className="py-3 px-4 text-blue-600 font-semibold">
-                              Rp {(p.sell_price ?? p.price ?? 0).toLocaleString('id-ID')}
-                            </td>
-                          </>
+                          <td className="py-3 px-4 text-gray-500">
+                            Rp {(p.buy_price ?? 0).toLocaleString('id-ID')}
+                          </td>
                         )}
 
+                        {/* Harga Jual - Tampil untuk Semua (Owner & Kasir) */}
+                        <td className="py-3 px-4 text-blue-600 font-semibold">
+                          Rp {(p.sell_price ?? p.price ?? 0).toLocaleString('id-ID')}
+                        </td>
+
+                        {/* Kolom Stok */}
                         <td className="py-3 px-4">
                           <div className="inline-flex items-center gap-1.5 bg-gray-50 border border-gray-200 rounded-lg p-1">
                             <button
@@ -3430,6 +3436,7 @@ onClick={() => handleOpenPayModal(d)}
                           </div>
                         </td>
 
+                        {/* Aksi Edit/Hapus - Khusus Owner */}
                         {userRole === 'owner' && (
                           <td className="py-3 px-4 text-center space-x-2">
                             <button
