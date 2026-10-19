@@ -2681,10 +2681,11 @@ onClick={() => handleOpenPayModal(d)}
           </div>
         </div>
       )}
-      {activeTab === 'pos' && (
-        <div className="flex flex-1 overflow-hidden">
-          <div className="w-3/5 p-6 flex flex-col border-r border-gray-200">
-            <form onSubmit={handleBarcodeSubmit} className="mb-4 bg-blue-50 p-3 rounded-xl border border-blue-100 flex items-center space-x-2">
+{activeTab === 'pos' && (
+        <div className="flex flex-col lg:flex-row flex-1 overflow-hidden bg-gray-100">
+          {/* SISI KIRI: KATALOG PRODUK & SCANNER */}
+          <div className="w-full lg:w-3/5 p-4 flex flex-col border-r border-gray-200 overflow-y-auto">
+            <form onSubmit={handleBarcodeSubmit} className="mb-3 bg-blue-50 p-3 rounded-xl border border-blue-100 flex items-center space-x-2">
               <span className="text-sm font-bold text-blue-600 whitespace-nowrap">📷 Scan Barcode:</span>
               <input
                 ref={barcodeInputRef}
@@ -2702,11 +2703,11 @@ onClick={() => handleOpenPayModal(d)}
                   Katalog Produk <span className="text-xs font-normal text-gray-500">({filteredProducts.length})</span>
                 </h2>
                 
-<div className="flex space-x-1 border-l pl-3">
+                <div className="flex space-x-1 border-l pl-3 overflow-x-auto">
                   <button
                     type="button"
                     onClick={() => setSelectedCategory('Semua')}
-                    className={`px-2.5 py-1 rounded-lg text-xs font-semibold whitespace-nowrap transition ${
+                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition ${
                       selectedCategory === 'Semua'
                         ? 'bg-blue-600 text-white shadow-sm'
                         : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
@@ -2719,7 +2720,7 @@ onClick={() => handleOpenPayModal(d)}
                       key={cat.id}
                       type="button"
                       onClick={() => setSelectedCategory(cat.name)}
-                      className={`px-2.5 py-1 rounded-lg text-xs font-semibold whitespace-nowrap transition ${
+                      className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition ${
                         selectedCategory === cat.name
                           ? 'bg-blue-600 text-white shadow-sm'
                           : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
@@ -2740,7 +2741,8 @@ onClick={() => handleOpenPayModal(d)}
               />
             </div>
 
-            <div className="grid grid-cols-3 gap-3 overflow-y-auto flex-1 pr-2">
+            {/* Grid Katalog Produk: Diatur 2 kolom di HP, dan 3 kolom optimal untuk Tablet 8 inch */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 overflow-y-auto flex-1 pr-1">
               {filteredProducts.length === 0 ? (
                 <div className="col-span-3 text-center py-10 text-gray-400 text-sm">
                   Produk tidak ditemukan dalam pencarian.
@@ -2755,15 +2757,15 @@ onClick={() => handleOpenPayModal(d)}
                       className="bg-white p-3 rounded-xl shadow-sm hover:shadow-md hover:border-blue-300 transition text-left flex flex-col justify-between border border-gray-200 cursor-pointer active:scale-95"
                     >
                       <div>
-{product.image_url ? (
-  <div className="w-full h-40 bg-gray-50 rounded-lg mb-2 overflow-hidden flex items-center justify-center">
-<img src={product.image_url} alt={product.name} className="w-full h-full object-contain" />
-  </div>
-) : (
-  <div className="w-full h-40 bg-gray-50 rounded-lg mb-2 flex items-center justify-center">
-    📷 Tanpa Foto
-  </div>
-)}
+                        {product.image_url ? (
+                          <div className="w-full h-28 sm:h-32 bg-gray-50 rounded-lg mb-2 overflow-hidden flex items-center justify-center">
+                            <img src={product.image_url} alt={product.name} className="w-full h-full object-cover" />
+                          </div>
+                        ) : (
+                          <div className="w-full h-28 sm:h-32 bg-gray-50 rounded-lg mb-2 flex items-center justify-center text-xs text-gray-400">
+                            📷 Tanpa Foto
+                          </div>
+                        )}
                         <p className="font-semibold text-gray-800 text-xs line-clamp-2">{product.name}</p>
                         {product.sku && <p className="text-[10px] text-blue-500 font-mono mt-0.5">SKU: {product.sku}</p>}
                         {product.barcode && <p className="text-[10px] text-gray-400 font-mono">BC: {product.barcode}</p>}
@@ -2781,7 +2783,8 @@ onClick={() => handleOpenPayModal(d)}
             </div>
           </div>
 
-          <div className="w-2/5 p-6 bg-white flex flex-col justify-between shadow-sm overflow-y-auto">
+          {/* SISI KANAN: KERANJANG BELANJA & PEMBAYARAN */}
+          <div className="w-full lg:w-2/5 p-4 bg-white flex flex-col justify-between shadow-sm overflow-y-auto">
             <div>
               <div className="flex justify-between items-center mb-3 pb-2 border-b">
                 <h2 className="text-lg font-bold text-gray-800">Keranjang Belanja</h2>
@@ -2790,7 +2793,7 @@ onClick={() => handleOpenPayModal(d)}
                 </span>
               </div>
 
-              <div className="max-h-[300px] overflow-y-auto pr-2 space-y-2 mb-3">
+              <div className="max-h-[220px] sm:max-h-[260px] overflow-y-auto pr-2 space-y-2 mb-3">
                 {cart.length === 0 ? (
                   <p className="text-gray-400 text-center text-sm mt-8">Belum ada barang di keranjang</p>
                 ) : (
@@ -2876,7 +2879,7 @@ onClick={() => handleOpenPayModal(d)}
                       key={method}
                       type="button"
                       onClick={() => setPaymentMethod(method)}
-                      className={`py-1.5 rounded-lg text-xs font-bold border transition ${
+                      className={`py-2 rounded-lg text-xs font-bold border transition ${
                         paymentMethod === method
                           ? 'bg-blue-600 text-white border-blue-600 shadow'
                           : 'bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100'
@@ -2899,7 +2902,7 @@ onClick={() => handleOpenPayModal(d)}
                         placeholder="0"
                         value={cashPaid}
                         onChange={handleCashPaidChange}
-                        className="w-full pl-9 pr-3 py-1 border rounded-lg text-xs bg-white text-gray-800 font-bold focus:ring-2 focus:ring-blue-500"
+                        className="w-full pl-9 pr-3 py-1.5 border rounded-lg text-xs bg-white text-gray-800 font-bold focus:ring-2 focus:ring-blue-500"
                       />
                     </div>
                   </div>
@@ -2942,10 +2945,10 @@ onClick={() => handleOpenPayModal(d)}
               <button
                 onClick={handleCheckout}
                 disabled={loading || cart.length === 0 || (paymentMethod === 'Tunai' && numericCashPaid < calculation.totalAmount) || (paymentMethod === 'Utang' && !customerName.trim())}
-                className={`w-full py-2.5 rounded-xl font-bold text-white text-sm transition ${
+                className={`w-full py-3 rounded-xl font-extrabold text-white text-sm transition ${
                   loading || cart.length === 0 || (paymentMethod === 'Tunai' && numericCashPaid < calculation.totalAmount) || (paymentMethod === 'Utang' && !customerName.trim())
                     ? 'bg-gray-300 cursor-not-allowed'
-                    : 'bg-blue-600 hover:bg-blue-700 shadow-lg'
+                    : 'bg-blue-600 hover:bg-blue-700 active:scale-[0.99] shadow-md'
                 }`}
               >
                 {loading ? 'Memproses...' : `Bayar via ${paymentMethod}`}
@@ -2953,7 +2956,7 @@ onClick={() => handleOpenPayModal(d)}
             </div>
           </div>
         </div>
-        )}
+      )}
 {activeTab === 'products' && (
         <div className="flex-1 p-8 max-w-5xl mx-auto w-full overflow-y-auto space-y-6">
           
