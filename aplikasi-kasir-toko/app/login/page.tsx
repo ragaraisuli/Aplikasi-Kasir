@@ -102,7 +102,16 @@ export default function LoginPage() {
             </button>
           </form>
         ) : (
+            
           <form onSubmit={handleResetPassword} className="space-y-4">
+            <div className="text-center pt-4 border-t border-gray-100 mt-4">
+  <p className="text-xs text-gray-600">
+    Belum punya toko?{' '}
+    <a href="/register" className="text-blue-600 font-semibold hover:underline">
+      Daftar Toko Baru
+    </a>
+  </p>
+</div>
             <div>
               <label className="block text-xs font-semibold text-gray-700 mb-1">Email Terdaftar</label>
               <input
