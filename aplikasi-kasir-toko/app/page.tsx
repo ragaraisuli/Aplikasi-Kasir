@@ -968,7 +968,7 @@ const handleQuickStockUpdate = async (productId: number, currentStock: number, d
           {
             subtotal: calculation.subtotal,
             total_amount: calculation.totalAmount,
-            cashier_name: cashierName,
+            cashier_name: userName,
             payment_method: paymentMethod,
             store_id: currentStoreId,
           },
@@ -3497,7 +3497,9 @@ onClick={() => handleOpenPayModal(d)}
             <div className="space-y-1 text-xs text-gray-600 border-b border-dashed pb-3">
               <p><span className="font-semibold">ID Transaksi:</span> #{selectedTransaction.id}</p>
               <p><span className="font-semibold">Waktu:</span> {new Date(selectedTransaction.created_at).toLocaleString('id-ID')}</p>
-              <p><span className="font-semibold">Kasir:</span> {selectedTransaction.cashier_name || userName}</p>
+              <p><span className="font-semibold">Kasir:</span> {selectedTransaction.cashier_name && selectedTransaction.cashier_name !== 'Kasir'
+    ? selectedTransaction.cashier_name
+    : userName || cashierName}</p>
               <p>
                 <span className="font-semibold">Metode Pembayaran:</span>{' '}
                 <span className="font-bold text-blue-600">
