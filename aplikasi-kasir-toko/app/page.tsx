@@ -402,6 +402,47 @@ const handleRegisterStaff = async (e: React.FormEvent) => {
   }
 };
 
+const [staffList, setStaffList] = useState<any[]>([]);
+const [loadingStaff, setLoadingStaff] = useState(false);
+
+const fetchStaffList = async () => {
+  if (!currentStoreId) return;
+  setLoadingStaff(true);
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('store_id', currentStoreId);
+
+  if (!error && data) {
+    setStaffList(data);
+  }
+  setLoadingStaff(false);
+};
+
+// Panggil fetchStaffList saat halaman profil dibuka atau currentStoreId tersedia
+useEffect(() => {
+  if (currentStoreId) {
+    fetchStaffList();
+  }
+}, [currentStoreId]);
+
+const handleDeleteStaff = async (staffId: string) => {
+  if (!confirm('Yakin ingin menghapus akun staf/kasir ini?')) return;
+
+  // Hapus dari tabel profiles
+  const { error } = await supabase
+    .from('profiles')
+    .delete()
+    .eq('id', staffId);
+
+  if (error) {
+    alert('Gagal menghapus staf: ' + error.message);
+  } else {
+    alert('Akun staf berhasil dihapus.');
+    fetchStaffList();
+  }
+};
+
 useEffect(() => {
   fetchStoreProfile();
 }, []);
@@ -2269,6 +2310,66 @@ const fetchCategories = async () => {
         </form>
       </div>
     )}
+
+{/* SECTION: Daftar Staf / Kasir Terdaftar */}
+<div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 mt-6 space-y-4">
+  <div className="flex justify-between items-center border-b pb-3">
+    <div>
+      <h3 className="font-bold text-gray-800 text-base">👥 Daftar Staf & Kasir Toko</h3>
+      <p className="text-xs text-gray-500">Kelola akun karyawan yang memiliki akses ke aplikasi POS.</p>
+    </div>
+    <button 
+      onClick={fetchStaffList}
+      className="text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1.5 rounded-lg transition font-semibold"
+    >
+      🔄 Refresh
+    </button>
+  </div>
+
+  {loadingStaff ? (
+    <p className="text-xs text-gray-500 text-center py-4">Memuat data staf...</p>
+  ) : staffList.length === 0 ? (
+    <p className="text-xs text-gray-400 text-center py-4">Belum ada akun staf yang terdaftar.</p>
+  ) : (
+    <div className="overflow-x-auto">
+      <table className="w-full text-left border-collapse text-sm">
+        <thead>
+          <tr className="border-b bg-gray-50 text-xs text-gray-600">
+            <th className="p-3 font-semibold">Nama Lengkap</th>
+            <th className="p-3 font-semibold">Email</th>
+            <th className="p-3 font-semibold">Role / Akses</th>
+            <th className="p-3 font-semibold text-center">Aksi</th>
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-gray-100">
+          {staffList.map((staff) => (
+            <tr key={staff.id} className="hover:bg-gray-50 transition">
+              <td className="p-3 font-medium text-gray-800">{staff.full_name || '-'}</td>
+              <td className="p-3 text-gray-600">{staff.email}</td>
+              <td className="p-3">
+                <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${
+                  staff.role === 'owner' ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700'
+                }`}>
+                  {staff.role?.toUpperCase()}
+                </span>
+              </td>
+              <td className="p-3 text-center space-x-2">
+                {staff.role !== 'owner' && (
+                  <button
+                    onClick={() => handleDeleteStaff(staff.id)}
+                    className="px-2.5 py-1 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg text-xs font-semibold transition"
+                  >
+                    🗑️ Hapus
+                  </button>
+                )}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  )}
+</div>
 
   </div>
 )}
