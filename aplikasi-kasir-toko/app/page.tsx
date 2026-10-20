@@ -1972,7 +1972,7 @@ const filteredProfitabilityList = productProfitabilityList.filter((p: any) => {
 
 {/* Tabel Analisis Profitabilitas per Produk */}
 <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-4">
-  <div className="flex justify-between items-center">
+  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
     <div>
       <h3 className="text-base font-bold text-gray-800">📈 Analisis Profitabilitas per Produk</h3>
       <p className="text-xs text-gray-500">Mengetahui produk mana yang memberikan laba dan margin keuntungan terbesar.</p>
@@ -1999,24 +1999,34 @@ const filteredProfitabilityList = productProfitabilityList.filter((p: any) => {
         </tr>
       </thead>
       <tbody className="text-xs divide-y">
-        {productSalesSummary.map((p) => (
-          <tr key={p.id} className="hover:bg-gray-50/50">
-            <td className="p-3 font-medium text-gray-800">{p.name}</td>
-            <td className="p-3 text-gray-600">
-              <span className={`px-2.5 py-0.5 rounded-full font-semibold ${p.qtySold > 0 ? 'bg-blue-50 text-blue-700' : 'bg-gray-100 text-gray-500'}`}>
-                {p.qtySold} {p.unit || 'pcs'}
-              </span>
-            </td>
-            <td className="p-3 text-gray-600">Rp {p.totalRevenue.toLocaleString('id-ID')}</td>
-            <td className="p-3 text-gray-500">Rp {p.totalCOGS.toLocaleString('id-ID')}</td>
-            <td className="p-3 text-right font-bold text-emerald-600">
-              Rp {p.grossProfit.toLocaleString('id-ID')}
-            </td>
-            <td className="p-3 text-right font-semibold text-gray-700">
-              {p.profitMargin}%
+        {filteredProfitabilityList.length === 0 ? (
+          <tr>
+            <td colSpan={6} className="text-center py-8 text-gray-400">
+              {profitabilitySearchTerm
+                ? 'Tidak ada produk terjual yang cocok dengan pencarian.'
+                : 'Belum ada produk yang terjual.'}
             </td>
           </tr>
-        ))}
+        ) : (
+          filteredProfitabilityList.map((p: any) => (
+            <tr key={p.id || p.name} className="hover:bg-gray-50/50">
+              <td className="p-3 font-medium text-gray-800">{p.name}</td>
+              <td className="p-3 text-gray-600">
+                <span className="px-2.5 py-0.5 rounded-full font-semibold bg-blue-50 text-blue-700">
+                  {p.soldQty} {p.unit || 'pcs'}
+                </span>
+              </td>
+              <td className="p-3 text-gray-600">Rp {(p.totalRevenue || 0).toLocaleString('id-ID')}</td>
+              <td className="p-3 text-gray-500">Rp {(p.totalCOGS || 0).toLocaleString('id-ID')}</td>
+              <td className="p-3 text-right font-bold text-emerald-600">
+                Rp {(p.grossProfit || 0).toLocaleString('id-ID')}
+              </td>
+              <td className="p-3 text-right font-semibold text-gray-700">
+                {p.margin}%
+              </td>
+            </tr>
+          ))
+        )}
       </tbody>
     </table>
   </div>
