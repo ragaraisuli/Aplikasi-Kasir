@@ -1977,6 +1977,14 @@ const filteredProfitabilityList = productProfitabilityList.filter((p: any) => {
       <h3 className="text-base font-bold text-gray-800">📈 Analisis Profitabilitas per Produk</h3>
       <p className="text-xs text-gray-500">Mengetahui produk mana yang memberikan laba dan margin keuntungan terbesar.</p>
     </div>
+    {/* Input Mesin Pencarian */}
+    <input
+      type="text"
+      placeholder="🔍 Cari nama produk..."
+      value={profitabilitySearchTerm}
+      onChange={(e) => setProfitabilitySearchTerm(e.target.value)}
+      className="px-3 py-1.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-800 text-sm w-full sm:w-60 shadow-sm"
+    />
   </div>
   <div className="overflow-x-auto">
     <table className="w-full text-left border-collapse">
