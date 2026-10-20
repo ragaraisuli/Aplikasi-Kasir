@@ -258,6 +258,8 @@ useEffect(() => {
   const [restockQty, setRestockQty] = useState('')
   const [restockType, setRestockType] = useState<'add' | 'reduce'>('add')
 
+  const [profitabilitySearchTerm, setProfitabilitySearchTerm] = useState('');
+
   // State Form Produk Baru / Edit
   const [editingId, setEditingId] = useState<number | null>(null)
   const [newName, setNewName] = useState('')
@@ -1390,6 +1392,50 @@ const fetchCategories = async () => {
     ? ((grossProfit / totalRevenue) * 100).toFixed(1) 
     : '0';
 
+// 2b. Hitung & Filter Profitabilitas Produk (Hanya Terjual > 0 & Pencarian)
+const productProfitabilityList = products.map((p: any) => {
+  // Hitung total unit terjual untuk produk ini dari transaksi yang terfilter
+  let soldQty = 0;
+  let totalRevenue = 0;
+  let totalCOGS = 0;
+
+  filteredTransactions.forEach((t: any) => {
+    const items = t.transaction_items || t.items || [];
+    items.forEach((item: any) => {
+      if (item.product_id === p.id || item.name === p.name) {
+        const qty = Number(item.qty || item.quantity) || 0;
+        const price = Number(item.price || item.sell_price) || 0;
+        const buyPrice = Number(p.buy_price || item.buy_price) || 0;
+
+        soldQty += qty;
+        totalRevenue += qty * price;
+        totalCOGS += qty * buyPrice;
+      }
+    });
+  });
+
+  const grossProfit = totalRevenue - totalCOGS;
+  const margin = totalRevenue > 0 ? ((grossProfit / totalRevenue) * 100).toFixed(1) : '0';
+
+  return {
+    id: p.id,
+    name: p.name,
+    unit: p.unit || 'pcs',
+    soldQty,
+    totalRevenue,
+    totalCOGS,
+    grossProfit,
+    margin,
+  };
+});
+
+// Filter hanya produk yang terjual (> 0) dan sesuai kata kunci pencarian
+const filteredProfitabilityList = productProfitabilityList.filter((p: any) => {
+  const isSold = p.soldQty > 0;
+  const matchesSearch = p.name.toLowerCase().includes((profitabilitySearchTerm || '').toLowerCase());
+  return isSold && matchesSearch;
+});
+    
   // 3. Analisis Jam Sibuk (Peak Hours)
   const hourlySalesMap: { [hour: number]: { count: number; total: number } } = {};
   filteredTransactions.forEach((t: any) => {
