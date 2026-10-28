@@ -1,9 +1,10 @@
 'use client';
-import { useState, useEffect } from 'react';
+
+import { Suspense, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase'; // Sesuaikan path supabase client Anda
 
-export default function PublicFeedbackPage() {
+function FeedbackFormContent() {
   const searchParams = useSearchParams();
   const storeId = searchParams.get('store'); // Mengambil store_id dari URL (?store=UUID_TOKO)
 
@@ -138,5 +139,13 @@ export default function PublicFeedbackPage() {
         </form>
       </div>
     </div>
+  );
+}
+
+export default function PublicFeedbackPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-gray-50 flex items-center justify-center text-xs text-gray-500">Memuat halaman...</div>}>
+      <FeedbackFormContent />
+    </Suspense>
   );
 }
