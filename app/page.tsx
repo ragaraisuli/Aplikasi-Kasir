@@ -245,16 +245,20 @@ useEffect(() => {
 
   // State Modal Struk & Detail Item
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null)
-
+const feedbackUrl = `https://app-kasirl.vercel.app/feedback?store=${currentStoreId}`;
+const qrCodeImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(feedbackUrl)}`;
 const handlePrintClick = () => {
   // Cek apakah aplikasi berjalan di dalam pembungkus Electron
   const electron = (window as any).electronAPI;
   
   if (electron) {
-    // Kirim perintah cetak khusus ke Electron untuk printer thermal
-    electron.send('print-receipt', selectedTransaction);
+    // Kirim data transaksi beserta url qr code feedback toko
+    const transactionWithQR = {
+      ...selectedTransaction,
+      qrCodeUrl: qrCodeImageUrl, // <-- Menyertakan URL gambar QR Code
+    };
+    electron.send('print-receipt', transactionWithQR);
   } else {
-    // Fallback jika dibuka lewat browser biasa (memunculkan print dialog web)
     window.print();
   }
 };
@@ -3623,8 +3627,19 @@ onClick={() => handleOpenPayModal(d)}
               <p className="font-semibold text-gray-700">*** Terima Kasih ***</p>
               <p className="text-[11px]">Silakan Datang Kembali!</p>
               <p className="text-[10px] text-gray-400 mt-2">Barang yang sudah dibeli tidak dapat ditukar/dikembalikan.</p>
-            </div>
+            
+{/* Tambahan QR Code untuk Feedback Pelanggan */}
+  <div className="flex flex-col items-center justify-center pt-2">
+    <img 
+      src={qrCodeImageUrl} 
+      alt="QR Code Feedback" 
+      className="w-20 h-20 object-contain"
+    />
+    <span className="text-[9px] text-gray-600 mt-1 font-medium">Scan untuk Beri Ulasan / Saran</span>
+  </div>
 
+  <p className="text-[10px] text-gray-400 mt-2">Barang yang sudah dibeli tidak dapat ditukar</p>
+</div>
             <div className="flex space-x-2 pt-2">
               <button
                 onClick={() => window.print()}
