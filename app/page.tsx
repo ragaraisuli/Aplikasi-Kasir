@@ -3637,8 +3637,6 @@ onClick={() => handleOpenPayModal(d)}
     />
     <span className="text-[9px] text-gray-600 mt-1 font-medium">Scan untuk Beri Ulasan / Saran</span>
   </div>
-
-  <p className="text-[10px] text-gray-400 mt-2">Barang yang sudah dibeli tidak dapat ditukar</p>
 </div>
             <div className="flex space-x-2 pt-2">
               <button
