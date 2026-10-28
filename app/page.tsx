@@ -605,20 +605,19 @@ const handleLogout = async () => {
   window.location.href = '/login';
 };
 
-  // Panggil fungsi ini di dalam useEffect utama saat komponen pertama kali dirender
-useEffect(() => {
-  fetchCategories();
-  fetchAllTransactionItems();
-  fetchFeedbacks();
-}, [currentStoreId]);
+// Panggil fungsi ini di dalam useEffect utama saat komponen pertama kali dirender
+  useEffect(() => {
+    fetchCategories();
+    fetchAllTransactionItems();
+    fetchFeedbacks();
+  }, [currentStoreId]);
 
   useEffect(() => {
-    fetchProducts()
-    fetchTransactions()
-    fetchDebts()
-    fetchPromos()
-    fetchFeedbacks()
-  }, [])
+    fetchProducts();
+    fetchTransactions();
+    fetchDebts();
+    fetchPromos();
+  }, []);
 
 useEffect(() => {
   const checkAuth = async () => {
@@ -2199,7 +2198,7 @@ const filteredProfitabilityList = productProfitabilityList.filter((p: any) => {
               <p className="text-xs font-bold text-gray-700 mb-2">QR Code Form Feedback Toko</p>
 <img
   src={`https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(
-    `https://app-kasirl1.vercel.app/feedback?store=${currentStoreId}`
+    `https://app-kasirl.vercel.app/feedback?store=${currentStoreId}`
   )}`}
   alt="QR Code Feedback"
   className="w-28 h-28 rounded shadow-sm border"
