@@ -12,7 +12,7 @@ export default function LoginPage() {
   const [isForgotPassword, setIsForgotPassword] = useState(false);
   const router = useRouter();
 
-  const handleLogin = async (e: React.FormEvent) => {
+const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
@@ -26,7 +26,8 @@ export default function LoginPage() {
     if (error) {
       alert('Login Gagal: ' + error.message);
     } else {
-      router.push('/');
+      // Gunakan window.location.href agar cookie tersinkronisasi penuh dengan Middleware
+      window.location.href = '/';
     }
   };
 
