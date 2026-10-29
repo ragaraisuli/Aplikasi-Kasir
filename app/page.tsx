@@ -971,7 +971,7 @@ const handleQuickStockUpdate = async (productId: number, currentStock: number, d
   const numericCashPaid = parseFloat(cashPaid.replace(/\./g, '')) || 0
   const changeAmount = numericCashPaid - calculation.totalAmount
 
-  const handleCheckout = async () => {
+const handleCheckout = async () => {
     if (cart.length === 0) return alert('Keranjang masih kosong!')
     if (paymentMethod === 'Tunai' && numericCashPaid < calculation.totalAmount) {
       return alert('Uang tunai dari customer kurang!')
@@ -983,90 +983,74 @@ const handleQuickStockUpdate = async (productId: number, currentStock: number, d
     setLoading(true)
 
     try {
-      const { data: trxData, error: trxError } = await supabase
-        .from('transactions')
-        .insert([
-          {
-            subtotal: calculation.subtotal,
-            total_amount: calculation.totalAmount,
-            cashier_name: userName,
-            payment_method: paymentMethod,
-            store_id: currentStoreId,
-          },
-        ])
-        .select()
-
-      if (trxError) throw trxError
-      const newTransactionId = trxData[0].id
-
+      // 1. Siapkan payload item keranjang ringkas untuk dikirim ke backend (hanya ID dan Qty)
       const itemsPayload = cart.map((item) => ({
-        transaction_id: newTransactionId,
         product_id: item.id,
-        product_name: item.name,
-        price: item.price,
-        qty: item.quantity,
+        qty: item.quantity
       }))
 
-      const { error: itemsError } = await supabase
-        .from('transaction_items')
-        .insert(itemsPayload)
+      // 2. Panggil fungsi Supabase RPC (Server-Side Execution)
+      // Perhitungan harga, diskon, dan stok divalidasi langsung di database PostgreSQL
+      const { data, error } = await supabase.rpc('process_checkout', {
+        p_store_id: currentStoreId,
+        p_cashier_name: userName || cashierName,
+        p_payment_method: paymentMethod,
+        p_items: itemsPayload,
+        p_promo_code: appliedPromoCode || null,
+        p_cash_paid: numericCashPaid
+      })
 
-      if (itemsError) throw itemsError
+      if (error) throw error
 
-      if (paymentMethod === 'Utang') {
-  const { error: debtError } = await supabase
-    .from('debts')
-    .insert([
-      {
-        store_id: currentStoreId, // WAJIB ADA: Agar data terikat ke toko yang aktif
-        transaction_id: newTransactionId,
-        customer_name: customerName?.trim() || 'Pelanggan Umum',
-        customer_phone: customerPhone?.trim() || null,
-        total_amount: calculation.totalAmount,
-        paid_amount: 0,
-        remaining_amount: calculation.totalAmount,
-        status: 'Belum Lunas'
-      }
-    ]);
+      if (data && data.success) {
+        // 3. Jika metode pembayaran adalah Utang, catat ke tabel 'debts'
+        if (paymentMethod === 'Utang') {
+          const { error: debtError } = await supabase
+            .from('debts')
+            .insert([
+              {
+                store_id: currentStoreId, // WAJIB ADA: Agar data terikat ke toko yang aktif
+                transaction_id: data.transaction_id,
+                customer_name: customerName?.trim() || 'Pelanggan Umum',
+                customer_phone: customerPhone?.trim() || null,
+                total_amount: data.total_amount, // Menggunakan nilai resmi dari server
+                paid_amount: 0,
+                remaining_amount: data.total_amount,
+                status: 'Belum Lunas'
+              }
+            ]);
 
-  if (debtError) throw debtError;
-}
-
-      for (const item of cart) {
-        const productInDb = products.find((p) => p.id === item.id)
-        if (productInDb) {
-          const newStock = productInDb.stock - item.quantity
-          const { error: stockError } = await supabase
-            .from('products')
-            .update({ stock: newStock })
-            .eq('id', item.id)
-
-          if (stockError) throw stockError
+          if (debtError) throw debtError;
         }
+
+        const createdTransaction: Transaction = {
+          id: data.transaction_id,
+          created_at: new Date().toISOString(),
+          total_amount: data.total_amount,
+          cashier_name: userName || cashierName,
+          payment_method: paymentMethod
+        }
+
+        // Reset state aplikasi setelah sukses
+        setCart([])
+        setCashPaid('')
+        setCustomerName('')
+        setCustomerPhone('')
+        setAppliedPromoCode('')
+        setPaymentMethod('Tunai')
+        
+        // Muat ulang data terbaru dari database
+        fetchProducts()
+        fetchTransactions()
+        fetchDebts()
+
+        // Tampilkan struk transaksi
+        handleOpenReceipt(createdTransaction)
+
+        if (barcodeInputRef.current) barcodeInputRef.current.focus()
       }
-
-      const createdTransaction: Transaction = {
-        id: newTransactionId,
-        created_at: new Date().toISOString(),
-        total_amount: calculation.totalAmount,
-        cashier_name: cashierName,
-        payment_method: paymentMethod
-      }
-
-      setCart([])
-      setCashPaid('')
-      setCustomerName('')
-      setCustomerPhone('')
-      setAppliedPromoCode('')
-      setPaymentMethod('Tunai')
-      fetchProducts()
-      fetchTransactions()
-      fetchDebts()
-
-      handleOpenReceipt(createdTransaction)
-
-      if (barcodeInputRef.current) barcodeInputRef.current.focus()
     } catch (error: any) {
+      // Menangkap pesan error validasi dari server (misal: stok habis atau uang tunai kurang)
       alert('Gagal memproses transaksi: ' + (error.message || error))
     } finally {
       setLoading(false)
