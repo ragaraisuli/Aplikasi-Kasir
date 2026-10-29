@@ -14,20 +14,33 @@ export default function LoginPage() {
 
 const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    e.stopPropagation(); // Mencegah event bubbling bawaan form
+    
+    if (!email || !password) {
+      alert('Email dan password wajib diisi!');
+      return;
+    }
+
     setLoading(true);
 
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: email.trim(),
+        password: password,
+      });
 
-    setLoading(false);
+      if (error) {
+        throw error;
+      }
 
-    if (error) {
-      alert('Login Gagal: ' + error.message);
-    } else {
-      // Gunakan window.location.href agar cookie tersinkronisasi penuh dengan Middleware
-      window.location.href = '/';
+      if (data?.session) {
+        // Berhasil login, paksa arahkan ke halaman utama
+        window.location.href = '/';
+      }
+    } catch (err: any) {
+      console.error('Login error:', err);
+      alert('Login Gagal: ' + (err.message || 'Terjadi kesalahan pada sistem'));
+      setLoading(false);
     }
   };
 
