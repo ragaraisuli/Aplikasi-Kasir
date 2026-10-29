@@ -2749,9 +2749,9 @@ onClick={() => handleOpenPayModal(d)}
         </div>
       )}
 {activeTab === 'pos' && (
-        <div className="flex flex-row flex-1 overflow-hidden bg-gray-100">
+        <div className="flex flex-col md:flex-row flex-1 overflow-hidden bg-gray-100">
           {/* SISI KIRI: KATALOG PRODUK & SCANNER */}
-          <div className="w-full lg:w-3/5 p-4 flex flex-col border-r border-gray-200 overflow-y-auto">
+          <div className="w-full md:w-3/5 p-4 flex flex-col border-r border-gray-200 overflow-y-auto">
             <form onSubmit={handleBarcodeSubmit} className="mb-3 bg-blue-50 p-3 rounded-xl border border-blue-100 flex items-center space-x-2">
               <span className="text-sm font-bold text-blue-600 whitespace-nowrap">📷 Scan Barcode:</span>
               <input
@@ -2851,7 +2851,7 @@ onClick={() => handleOpenPayModal(d)}
           </div>
 
           {/* SISI KANAN: KERANJANG BELANJA & PEMBAYARAN */}
-          <div className="w-full lg:w-2/5 p-4 bg-white flex flex-col justify-between shadow-sm overflow-y-auto">
+          <div className="w-full md:w-2/5 p-4 bg-white flex flex-col justify-between shadow-sm overflow-y-auto">
             <div>
               <div className="flex justify-between items-center mb-3 pb-2 border-b">
                 <h2 className="text-lg font-bold text-gray-800">Keranjang Belanja</h2>
