@@ -3077,146 +3077,116 @@ onClick={() => handleOpenPayModal(d)}
               </div>
 
 {/* Bagian Input Member di POS */}
-              <div className="bg-blue-50 p-2.5 rounded-xl border border-blue-100 space-y-1.5 relative">
-                <label className="block text-xs font-semibold text-blue-800">👤 Pelanggan / Member (Opsional)</label>
-{activeMember ? (
-  <div className="bg-white p-2.5 rounded-lg border border-emerald-200 text-xs space-y-2">
-    <div className="flex justify-between items-center">
-      <span className="font-bold text-emerald-700">
-        ✔ {activeMember.name} ({activeMember.points} Poin)
-      </span>
-      <button
-        type="button"
-        onClick={() => {
-          setActiveMember(null);
-          setRedeemedDiscountAmount(0);
-          setIsRedeemingPoints(false);
-          setMemberSearchTerm('');
-        }}
-        className="text-red-500 hover:underline font-semibold text-[10px]"
-      >
-        Ganti / Lepas
-      </button>
-    </div>
-
-    {/* Opsi Tukar Poin */}
-    {redeemedDiscountAmount > 0 ? (
-      <div className="flex justify-between items-center bg-emerald-50 p-1.5 rounded text-emerald-800 font-semibold">
-        <span>🎁 Diskon Poin: -Rp {redeemedDiscountAmount.toLocaleString('id-ID')}</span>
+<div className="bg-blue-50 p-2.5 rounded-xl border border-blue-100 space-y-1.5 relative">
+  <label className="block text-xs font-semibold text-blue-800">👤 Pelanggan / Member (Opsional)</label>
+  
+  {activeMember ? (
+    <div className="bg-white p-2.5 rounded-lg border border-emerald-200 text-xs space-y-2">
+      <div className="flex justify-between items-center">
+        <span className="font-bold text-emerald-700">
+          ✔ {activeMember.name} ({activeMember.points} Poin)
+        </span>
         <button
           type="button"
           onClick={() => {
+            setActiveMember(null);
             setRedeemedDiscountAmount(0);
             setIsRedeemingPoints(false);
+            setMemberSearchTerm('');
           }}
-          className="text-[10px] text-red-600 hover:underline"
+          className="text-red-500 hover:underline font-semibold text-[10px]"
         >
-          Batalkan Tukar
+          Ganti / Lepas
         </button>
       </div>
-    ) : (
-      <div>
-        {!isRedeemingPoints ? (
+
+      {/* Opsi Tukar Poin */}
+      {redeemedDiscountAmount > 0 ? (
+        <div className="flex justify-between items-center bg-emerald-50 p-1.5 rounded text-emerald-800 font-semibold">
+          <span>🎁 Diskon Poin: -Rp {redeemedDiscountAmount.toLocaleString('id-ID')}</span>
           <button
-            type="button"
-            onClick={() => setIsRedeemingPoints(true)}
-            className="w-full py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded font-bold text-[11px] transition shadow-sm"
-          >
-            ⭐ Tukar Poin Jadi Diskon
-          </button>
-        ) : (
-          <div className="flex gap-1.5">
-            <input
-              type="number"
-              max={activeMember.points}
-              placeholder={`Maks ${activeMember.points} poin`}
-              value={pointsToRedeem}
-              onChange={(e) => setPointsToRedeem(e.target.value)}
-              className="w-full px-2 py-1 border rounded text-xs bg-white text-gray-800"
-            />
-            <button
-              type="button"
-              onClick={() => {
-                const pts = parseInt(pointsToRedeem, 10);
-                if (isNaN(pts) || pts <= 0) return alert('Masukkan jumlah poin yang valid!');
-                if (pts > activeMember.points) return alert('Poin member tidak mencukupi!');
-                
-                const discountVal = pts * pointValueRupiah;
-                setRedeemedDiscountAmount(discountVal);
-                setIsRedeemingPoints(false);
-                setPointsToRedeem('');
-              }}
-              className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded font-bold text-[11px]"
-            >
-              Terapkan
-            </button>
-          </div>
-        )}
-      </div>
-    )}
-  </div>
-) : (
-  <div>
-    <input
-      type="text"
-      placeholder="Cari nama atau no HP member..."
-      value={memberSearchTerm}
-      onChange={(e) => handleSearchMember(e.target.value)}
-      className="w-full px-3 py-1.5 border rounded-lg text-xs bg-white text-gray-800 focus:ring-2 focus:ring-blue-500"
-    />
-    {showMemberList && memberList.length > 0 && (
-      <div className="absolute left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-20 max-h-36 overflow-y-auto">
-        {memberList.map((m) => (
-          <button
-            key={m.id}
             type="button"
             onClick={() => {
-              setActiveMember(m);
-              setShowMemberList(false);
-              setMemberSearchTerm(m.name);
+              setRedeemedDiscountAmount(0);
+              setIsRedeemingPoints(false);
             }}
-            className="w-full text-left px-3 py-2 text-xs hover:bg-blue-50 border-b last:border-b-0 flex justify-between items-center"
+            className="text-[10px] text-red-600 hover:underline"
           >
-            <span className="font-bold text-gray-800">{m.name}</span>
-            <span className="text-gray-500">{m.phone} ({m.points} Poin)</span>
+            Batalkan Tukar
           </button>
-        ))}
-      </div>
-    )}
-  </div>
-)}
-
-                ) : (
-                  <div>
-                    <input
-                      type="text"
-                      placeholder="Cari nama atau no HP member..."
-                      value={memberSearchTerm}
-                      onChange={(e) => handleSearchMember(e.target.value)}
-                      className="w-full px-3 py-1.5 border rounded-lg text-xs bg-white text-gray-800 focus:ring-2 focus:ring-blue-500"
-                    />
-                    {showMemberList && memberList.length > 0 && (
-                      <div className="absolute left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-20 max-h-36 overflow-y-auto">
-                        {memberList.map((m) => (
-                          <button
-                            key={m.id}
-                            type="button"
-                            onClick={() => {
-                              setActiveMember(m);
-                              setShowMemberList(false);
-                              setMemberSearchTerm(m.name);
-                            }}
-                            className="w-full text-left px-3 py-2 text-xs hover:bg-blue-50 border-b last:border-b-0 flex justify-between items-center"
-                          >
-                            <span className="font-bold text-gray-800">{m.name}</span>
-                            <span className="text-gray-500">{m.phone} ({m.points} Poin)</span>
-                          </button>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                )
-              </div>
+        </div>
+      ) : (
+        <div>
+          {!isRedeemingPoints ? (
+            <button
+              type="button"
+              onClick={() => setIsRedeemingPoints(true)}
+              className="w-full py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded font-bold text-[11px] transition shadow-sm"
+            >
+              ⭐ Tukar Poin Jadi Diskon
+            </button>
+          ) : (
+            <div className="flex gap-1.5">
+              <input
+                type="number"
+                max={activeMember.points}
+                placeholder={`Maks ${activeMember.points} poin`}
+                value={pointsToRedeem}
+                onChange={(e) => setPointsToRedeem(e.target.value)}
+                className="w-full px-2 py-1 border rounded text-xs bg-white text-gray-800"
+              />
+              <button
+                type="button"
+                onClick={() => {
+                  const pts = parseInt(pointsToRedeem, 10);
+                  if (isNaN(pts) || pts <= 0) return alert('Masukkan jumlah poin yang valid!');
+                  if (pts > activeMember.points) return alert('Poin member tidak mencukupi!');
+                  
+                  const discountVal = pts * pointValueRupiah;
+                  setRedeemedDiscountAmount(discountVal);
+                  setIsRedeemingPoints(false);
+                  setPointsToRedeem('');
+                }}
+                className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded font-bold text-[11px]"
+              >
+                Terapkan
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  ) : (
+    <div>
+      <input
+        type="text"
+        placeholder="Cari nama atau no HP member..."
+        value={memberSearchTerm}
+        onChange={(e) => handleSearchMember(e.target.value)}
+        className="w-full px-3 py-1.5 border rounded-lg text-xs bg-white text-gray-800 focus:ring-2 focus:ring-blue-500"
+      />
+      {showMemberList && memberList.length > 0 && (
+        <div className="absolute left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-20 max-h-36 overflow-y-auto">
+          {memberList.map((m) => (
+            <button
+              key={m.id}
+              type="button"
+              onClick={() => {
+                setActiveMember(m);
+                setShowMemberList(false);
+                setMemberSearchTerm(m.name);
+              }}
+              className="w-full text-left px-3 py-2 text-xs hover:bg-blue-50 border-b last:border-b-0 flex justify-between items-center"
+            >
+              <span className="font-bold text-gray-800">{m.name}</span>
+              <span className="text-gray-500">{m.phone} ({m.points} Poin)</span>
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  )}
+</div>
 
               <div className="bg-gray-50 p-2.5 rounded-xl border space-y-1 text-xs">
                 <div className="flex justify-between text-gray-600">
