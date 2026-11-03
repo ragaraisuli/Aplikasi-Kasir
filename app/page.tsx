@@ -104,6 +104,12 @@ export default function KasirPage() {
   const [showMemberList, setShowMemberList] = useState(false);
 const [showSplash, setShowSplash] = useState(true);
 
+ // State untuk Reedem poin (POS)
+const [isRedeemingPoints, setIsRedeemingPoints] = useState(false);
+const [pointsToRedeem, setPointsToRedeem] = useState('');
+const [redeemedDiscountAmount, setRedeemedDiscountAmount] = useState(0);
+const [pointValueRupiah, setPointValueRupiah] = useState(100); // Default 1 poin = Rp 100
+
   useEffect(() => {
     // Durasi splash screen 2,5 detik (2500 ms)
     const timer = setTimeout(() => {
@@ -237,7 +243,19 @@ useEffect(() => {
 
     fetchUserProfile();
   }, []);
-  
+
+  const fetchPointSettingsForPOS = async () => {
+  if (!currentStoreId) return;
+  const { data } = await supabase
+    .from('store_point_settings')
+    .select('point_value_rupiah')
+    .eq('store_id', currentStoreId)
+    .single();
+  if (data) {
+    setPointValueRupiah(Number(data.point_value_rupiah) || 100);
+  }
+};
+
   // State Pencarian & Filter
   const [searchTerm, setSearchTerm] = useState('')
   const [tableSearchTerm, setTableSearchTerm] = useState('')
@@ -951,7 +969,7 @@ const handleQuickStockUpdate = async (productId: number, currentStock: number, d
     )
   }
 
-  const calculateCartWithPromo = () => {
+const calculateCartWithPromo = () => {
     let subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0)
     let totalDiscount = 0
 
@@ -986,11 +1004,20 @@ const handleQuickStockUpdate = async (productId: number, currentStock: number, d
     }
 
     if (totalDiscount > subtotal) totalDiscount = subtotal
-    const totalAmount = subtotal - totalDiscount
+
+    // === TAMBAHAN UNTUK DISKON PENUKARAN POIN ===
+    const pointDiscount = redeemedDiscountAmount || 0
+    let finalDiscount = totalDiscount + pointDiscount
+
+    // Pastikan total diskon tidak melebihi subtotal
+    if (finalDiscount > subtotal) finalDiscount = subtotal
+
+    const totalAmount = subtotal - finalDiscount
+    // ============================================
 
     return {
       subtotal: Math.round(subtotal),
-      discount: Math.round(totalDiscount),
+      discount: Math.round(finalDiscount),
       totalAmount: Math.round(totalAmount)
     }
   }
@@ -1042,7 +1069,7 @@ const handleCheckout = async () => {
 
       if (data && data.success) {
 
-       if (activeMember) {
+if (activeMember) {
           const { data: setting } = await supabase
             .from('store_point_settings')
             .select('*')
@@ -1054,14 +1081,19 @@ const handleCheckout = async () => {
             const pointsEarnedConfig = Number(setting.points_earned) || 1;
             const totalTransactionAmount = data.total_amount || calculation.totalAmount;
 
+            // 1. Poin yang didapat dari belanjaan ini
             const earnedPoints = Math.floor(totalTransactionAmount / minPurchase) * pointsEarnedConfig;
+            
+            // 2. Poin yang dipakai untuk tukar diskon (jika ada)
+            const spentPoints = redeemedDiscountAmount > 0 ? (redeemedDiscountAmount / pointValueRupiah) : 0;
 
-            if (earnedPoints > 0) {
-              await supabase
-                .from('members')
-                .update({ points: (activeMember.points || 0) + earnedPoints })
-                .eq('id', activeMember.id);
-            }
+            // 3. Kalkulasi saldo poin akhir (Poin lama - Poin ditukar + Poin baru)
+            const finalPoints = (activeMember.points || 0) - spentPoints + earnedPoints;
+
+            await supabase
+              .from('members')
+              .update({ points: finalPoints < 0 ? 0 : finalPoints })
+              .eq('id', activeMember.id);
           }
         }
         
@@ -1093,13 +1125,16 @@ const handleCheckout = async () => {
           payment_method: paymentMethod
         }
 
-        // Reset state aplikasi setelah sukses
+        // Reset state aplikasi setelah sukses (Termasuk state member & diskon poin)
         setCart([])
         setCashPaid('')
         setCustomerName('')
         setCustomerPhone('')
         setAppliedPromoCode('')
         setPaymentMethod('Tunai')
+        setActiveMember(null)          // Reset member aktif
+        setRedeemedDiscountAmount(0)   // Reset diskon poin
+        setMemberSearchTerm('')        // Reset teks pencarian member
         
         // Muat ulang data terbaru dari database
         fetchProducts()
@@ -3044,22 +3079,113 @@ onClick={() => handleOpenPayModal(d)}
 {/* Bagian Input Member di POS */}
               <div className="bg-blue-50 p-2.5 rounded-xl border border-blue-100 space-y-1.5 relative">
                 <label className="block text-xs font-semibold text-blue-800">👤 Pelanggan / Member (Opsional)</label>
-                {activeMember ? (
-                  <div className="flex justify-between items-center bg-white p-2 rounded-lg border border-emerald-200 text-xs">
-                    <span className="font-bold text-emerald-700">
-                      ✔ {activeMember.name} ({activeMember.points} Poin)
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setActiveMember(null);
-                        setMemberSearchTerm('');
-                      }}
-                      className="text-red-500 hover:underline font-semibold text-[10px]"
-                    >
-                      Ganti / Lepas
-                    </button>
-                  </div>
+{activeMember ? (
+  <div className="bg-white p-2.5 rounded-lg border border-emerald-200 text-xs space-y-2">
+    <div className="flex justify-between items-center">
+      <span className="font-bold text-emerald-700">
+        ✔ {activeMember.name} ({activeMember.points} Poin)
+      </span>
+      <button
+        type="button"
+        onClick={() => {
+          setActiveMember(null);
+          setRedeemedDiscountAmount(0);
+          setIsRedeemingPoints(false);
+          setMemberSearchTerm('');
+        }}
+        className="text-red-500 hover:underline font-semibold text-[10px]"
+      >
+        Ganti / Lepas
+      </button>
+    </div>
+
+    {/* Opsi Tukar Poin */}
+    {redeemedDiscountAmount > 0 ? (
+      <div className="flex justify-between items-center bg-emerald-50 p-1.5 rounded text-emerald-800 font-semibold">
+        <span>🎁 Diskon Poin: -Rp {redeemedDiscountAmount.toLocaleString('id-ID')}</span>
+        <button
+          type="button"
+          onClick={() => {
+            setRedeemedDiscountAmount(0);
+            setIsRedeemingPoints(false);
+          }}
+          className="text-[10px] text-red-600 hover:underline"
+        >
+          Batalkan Tukar
+        </button>
+      </div>
+    ) : (
+      <div>
+        {!isRedeemingPoints ? (
+          <button
+            type="button"
+            onClick={() => setIsRedeemingPoints(true)}
+            className="w-full py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded font-bold text-[11px] transition shadow-sm"
+          >
+            ⭐ Tukar Poin Jadi Diskon
+          </button>
+        ) : (
+          <div className="flex gap-1.5">
+            <input
+              type="number"
+              max={activeMember.points}
+              placeholder={`Maks ${activeMember.points} poin`}
+              value={pointsToRedeem}
+              onChange={(e) => setPointsToRedeem(e.target.value)}
+              className="w-full px-2 py-1 border rounded text-xs bg-white text-gray-800"
+            />
+            <button
+              type="button"
+              onClick={() => {
+                const pts = parseInt(pointsToRedeem, 10);
+                if (isNaN(pts) || pts <= 0) return alert('Masukkan jumlah poin yang valid!');
+                if (pts > activeMember.points) return alert('Poin member tidak mencukupi!');
+                
+                const discountVal = pts * pointValueRupiah;
+                setRedeemedDiscountAmount(discountVal);
+                setIsRedeemingPoints(false);
+                setPointsToRedeem('');
+              }}
+              className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded font-bold text-[11px]"
+            >
+              Terapkan
+            </button>
+          </div>
+        )}
+      </div>
+    )}
+  </div>
+) : (
+  <div>
+    <input
+      type="text"
+      placeholder="Cari nama atau no HP member..."
+      value={memberSearchTerm}
+      onChange={(e) => handleSearchMember(e.target.value)}
+      className="w-full px-3 py-1.5 border rounded-lg text-xs bg-white text-gray-800 focus:ring-2 focus:ring-blue-500"
+    />
+    {showMemberList && memberList.length > 0 && (
+      <div className="absolute left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-20 max-h-36 overflow-y-auto">
+        {memberList.map((m) => (
+          <button
+            key={m.id}
+            type="button"
+            onClick={() => {
+              setActiveMember(m);
+              setShowMemberList(false);
+              setMemberSearchTerm(m.name);
+            }}
+            className="w-full text-left px-3 py-2 text-xs hover:bg-blue-50 border-b last:border-b-0 flex justify-between items-center"
+          >
+            <span className="font-bold text-gray-800">{m.name}</span>
+            <span className="text-gray-500">{m.phone} ({m.points} Poin)</span>
+          </button>
+        ))}
+      </div>
+    )}
+  </div>
+)}
+
                 ) : (
                   <div>
                     <input
@@ -3089,7 +3215,7 @@ onClick={() => handleOpenPayModal(d)}
                       </div>
                     )}
                   </div>
-                )}
+                )
               </div>
 
               <div className="bg-gray-50 p-2.5 rounded-xl border space-y-1 text-xs">
