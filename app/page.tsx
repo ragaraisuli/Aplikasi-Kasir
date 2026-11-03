@@ -3030,6 +3030,17 @@ onClick={() => handleOpenPayModal(d)}
               </div>
             </div>
 
+            <div className="border-t pt-3 space-y-2">
+              <div>
+                <input
+                  type="text"
+                  placeholder="🎟️ Kode Promo (Opsional)"
+                  value={appliedPromoCode}
+                  onChange={(e) => setAppliedPromoCode(e.target.value)}
+                  className="w-full px-3 py-1.5 border rounded-lg text-sm bg-gray-50 text-gray-800 uppercase font-mono"
+                />
+              </div>
+
 {/* Bagian Input Member di POS */}
               <div className="bg-blue-50 p-2.5 rounded-xl border border-blue-100 space-y-1.5 relative">
                 <label className="block text-xs font-semibold text-blue-800">👤 Pelanggan / Member (Opsional)</label>
@@ -3079,17 +3090,6 @@ onClick={() => handleOpenPayModal(d)}
                     )}
                   </div>
                 )}
-              </div>
-
-            <div className="border-t pt-3 space-y-2">
-              <div>
-                <input
-                  type="text"
-                  placeholder="🎟️ Kode Promo (Opsional)"
-                  value={appliedPromoCode}
-                  onChange={(e) => setAppliedPromoCode(e.target.value)}
-                  className="w-full px-3 py-1.5 border rounded-lg text-sm bg-gray-50 text-gray-800 uppercase font-mono"
-                />
               </div>
 
               <div className="bg-gray-50 p-2.5 rounded-xl border space-y-1 text-xs">
