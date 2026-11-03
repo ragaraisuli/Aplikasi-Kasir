@@ -97,6 +97,11 @@ export default function KasirPage() {
   const [selectedDebt, setSelectedDebt] = useState<any>(null)
   const [paymentInput, setPaymentInput] = useState('')
 
+  // State untuk Membership di Kasir (POS)
+  const [activeMember, setActiveMember] = useState<any | null>(null);
+  const [memberSearchTerm, setMemberSearchTerm] = useState('');
+  const [memberList, setMemberList] = useState<any[]>([]);
+  const [showMemberList, setShowMemberList] = useState(false);
 const [showSplash, setShowSplash] = useState(true);
 
   useEffect(() => {
@@ -342,6 +347,28 @@ const handlePrintClick = () => {
     // Bersihkan memori
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
+  };
+
+// Fungsi untuk mencari data member berdasarkan toko aktif
+  const handleSearchMember = async (query: string) => {
+    setMemberSearchTerm(query);
+    if (!query.trim() || !currentStoreId) {
+      setMemberList([]);
+      setShowMemberList(false);
+      return;
+    }
+
+    const { data, error } = await supabase
+      .from('members')
+      .select('*')
+      .eq('store_id', currentStoreId)
+      .or(`name.ilike.%${query}%,phone.ilike.%${query}%`)
+      .limit(5);
+
+    if (!error && data) {
+      setMemberList(data);
+      setShowMemberList(true);
+    }
   };
 
 const [storeProfile, setStoreProfile] = useState<any>({
@@ -1014,6 +1041,30 @@ const handleCheckout = async () => {
       if (error) throw error
 
       if (data && data.success) {
+
+       if (activeMember) {
+          const { data: setting } = await supabase
+            .from('store_point_settings')
+            .select('*')
+            .eq('store_id', currentStoreId)
+            .single();
+
+          if (setting) {
+            const minPurchase = Number(setting.min_purchase) || 10000;
+            const pointsEarnedConfig = Number(setting.points_earned) || 1;
+            const totalTransactionAmount = data.total_amount || calculation.totalAmount;
+
+            const earnedPoints = Math.floor(totalTransactionAmount / minPurchase) * pointsEarnedConfig;
+
+            if (earnedPoints > 0) {
+              await supabase
+                .from('members')
+                .update({ points: (activeMember.points || 0) + earnedPoints })
+                .eq('id', activeMember.id);
+            }
+          }
+        }
+        
         // 3. Jika metode pembayaran adalah Utang, catat ke tabel 'debts'
         if (paymentMethod === 'Utang') {
           const { error: debtError } = await supabase
@@ -2642,6 +2693,31 @@ onClick={() => handleOpenPayModal(d)}
                 </select>
               </div>
 
+<div className="bg-blue-50 p-3 rounded-xl border border-blue-100 space-y-2">
+  <label className="block text-xs font-semibold text-blue-800">👤 Identitas Pelanggan / Member (Opsional)</label>
+  <div className="flex gap-2">
+    <input
+      type="text"
+      placeholder="Cari No HP / Nama Member..."
+      value={memberSearchTerm}
+      onChange={(e) => handleSearchMember(e.target.value)}
+      className="w-full px-3 py-1.5 border rounded-lg text-xs bg-white text-gray-800 focus:ring-2 focus:ring-blue-500"
+    />
+  </div>
+  {/* Jika member ditemukan */}
+  {activeMember && (
+    <div className="text-xs text-emerald-700 font-semibold flex justify-between items-center bg-white p-2 rounded border border-emerald-200">
+      <span>✔ {activeMember.name} ({activeMember.points} Poin)</span>
+      <button 
+        onClick={() => setActiveMember(null)}
+        className="text-red-500 hover:underline text-[10px]"
+      >
+        Lepas
+      </button>
+    </div>
+  )}
+</div>
+
               <div>
                 <label className="block text-xs font-semibold text-gray-600 mb-1">Kode Promo (Opsional)</label>
                 <input
@@ -2953,6 +3029,57 @@ onClick={() => handleOpenPayModal(d)}
                 )}
               </div>
             </div>
+
+{/* Bagian Input Member di POS */}
+              <div className="bg-blue-50 p-2.5 rounded-xl border border-blue-100 space-y-1.5 relative">
+                <label className="block text-xs font-semibold text-blue-800">👤 Pelanggan / Member (Opsional)</label>
+                {activeMember ? (
+                  <div className="flex justify-between items-center bg-white p-2 rounded-lg border border-emerald-200 text-xs">
+                    <span className="font-bold text-emerald-700">
+                      ✔ {activeMember.name} ({activeMember.points} Poin)
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setActiveMember(null);
+                        setMemberSearchTerm('');
+                      }}
+                      className="text-red-500 hover:underline font-semibold text-[10px]"
+                    >
+                      Ganti / Lepas
+                    </button>
+                  </div>
+                ) : (
+                  <div>
+                    <input
+                      type="text"
+                      placeholder="Cari nama atau no HP member..."
+                      value={memberSearchTerm}
+                      onChange={(e) => handleSearchMember(e.target.value)}
+                      className="w-full px-3 py-1.5 border rounded-lg text-xs bg-white text-gray-800 focus:ring-2 focus:ring-blue-500"
+                    />
+                    {showMemberList && memberList.length > 0 && (
+                      <div className="absolute left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-20 max-h-36 overflow-y-auto">
+                        {memberList.map((m) => (
+                          <button
+                            key={m.id}
+                            type="button"
+                            onClick={() => {
+                              setActiveMember(m);
+                              setShowMemberList(false);
+                              setMemberSearchTerm(m.name);
+                            }}
+                            className="w-full text-left px-3 py-2 text-xs hover:bg-blue-50 border-b last:border-b-0 flex justify-between items-center"
+                          >
+                            <span className="font-bold text-gray-800">{m.name}</span>
+                            <span className="text-gray-500">{m.phone} ({m.points} Poin)</span>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
 
             <div className="border-t pt-3 space-y-2">
               <div>
