@@ -3109,6 +3109,7 @@ onClick={() => handleOpenPayModal(d)}
             onClick={() => {
               setRedeemedDiscountAmount(0);
               setIsRedeemingPoints(false);
+              setPointsToRedeem('');
             }}
             className="text-[10px] text-red-600 hover:underline"
           >
@@ -3137,16 +3138,18 @@ onClick={() => handleOpenPayModal(d)}
               />
               <button
                 type="button"
-                onClick={() => {
-                  const pts = parseInt(pointsToRedeem, 10);
-                  if (isNaN(pts) || pts <= 0) return alert('Masukkan jumlah poin yang valid!');
-                  if (pts > activeMember.points) return alert('Poin member tidak mencukupi!');
-                  
-                  const discountVal = pts * pointValueRupiah;
-                  setRedeemedDiscountAmount(discountVal);
-                  setIsRedeemingPoints(false);
-                  setPointsToRedeem('');
-                }}
+onClick={() => {
+  const pts = parseInt(pointsToRedeem, 10);
+  if (isNaN(pts) || pts <= 0) return alert('Masukkan jumlah poin yang valid!');
+  if (pts > activeMember.points) return alert('Poin member tidak mencukupi!');
+
+  // Perhitungan diskon rupiah = poin yang diinput * nilai rupiah per poin
+  const discountVal = pts * (pointValueRupiah || 1);
+  
+  setRedeemedDiscountAmount(discountVal);
+  setIsRedeemingPoints(false);
+  setPointsToRedeem('');
+}}
                 className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded font-bold text-[11px]"
               >
                 Terapkan
