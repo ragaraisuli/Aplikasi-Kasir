@@ -3138,14 +3138,22 @@ onClick={() => handleOpenPayModal(d)}
               />
 <button
   type="button"
-  onClick={() => {
+  onClick={async () => {
     const pts = parseInt(pointsToRedeem, 10);
     if (isNaN(pts) || pts <= 0) return alert('Masukkan jumlah poin yang valid!');
     if (pts > activeMember.points) return alert('Poin member tidak mencukupi!');
 
-    // Konversi pointValueRupiah ke Number untuk menghindari bug string / fallback
-    const currentPointRate = Number(pointValueRupiah) > 0 ? Number(pointValueRupiah) : 1;
-    const discountVal = pts * currentPointRate;
+    // Ambil langsung nilai terbaru dari database untuk memastikan tidak meleset
+    const { data } = await supabase
+      .from('store_point_settings')
+      .select('point_value_rupiah')
+      .eq('store_id', currentStoreId) // Sesuaikan dengan variabel storeId Anda
+      .single();
+
+    const actualRate = data ? Number(data.point_value_rupiah) : 1;
+    
+    // Hitung diskon: 5 poin * 1 = Rp 5
+    const discountVal = pts * actualRate;
     
     setRedeemedDiscountAmount(discountVal);
     setIsRedeemingPoints(false);
