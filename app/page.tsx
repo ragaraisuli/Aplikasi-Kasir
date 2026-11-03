@@ -3483,48 +3483,45 @@ onClick={() => handleOpenPayModal(d)}
                         </td>
 
                         {/* Kolom Stok */}
-                        <td className="py-3 px-4">
-                          {userRole === 'owner' ? (
-                          <div className="inline-flex items-center gap-1.5 bg-gray-50 border border-gray-200 rounded-lg p-1">
-                            <button
-                              type="button"
-                              onClick={() => handleQuickStockUpdate(p.id, p.stock, -1)}
-                              disabled={p.stock <= 0}
-                              className="w-6 h-6 flex items-center justify-center bg-white hover:bg-rose-50 text-rose-600 border border-gray-200 rounded font-bold text-xs shadow-sm disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-                              title="Kurangi 1 Stok"
-                            >
-                              -
-                            </button>
-                            <span className={`px-2 font-bold text-xs ${
-                              p.stock === 0
-                                ? 'text-rose-600'
-                                : p.stock <= 5
-                                ? 'text-amber-600'
-                                : 'text-emerald-700'
-                            }`}>
-                              {p.stock} <span className="text-[10px] font-normal text-gray-500">{p.unit || 'pcs'}</span>
-                            </span>
-                            <button
-                              type="button"
-                              onClick={() => handleQuickStockUpdate(p.id, p.stock, 1)}
-                              className="w-6 h-6 flex items-center justify-center bg-white hover:bg-emerald-50 text-emerald-600 border border-gray-200 rounded font-bold text-xs shadow-sm transition-colors"
-                              title="Tambah 1 Stok"
-                            >
-                              +
-                            </button>
-                          </div>
-                          ) : (
-                            <span className={`px-2.5 py-1 rounded-lg text-xs font-semibold ${
-                              p.stock === 0
-                                ? 'bg-rose-50 text-rose-600'
-                                : p.stock <= 5
-                                ? 'bg-amber-50 text-amber-600'
-                                : 'bg-emerald-50 text-emerald-700'
-                            }`}>
-                              {p.stock} {p.unit || 'pcs'}
-                            </span>
-                          )}
-                        </td>
+<td className="py-3 px-4">
+  <div className="inline-flex items-center gap-1.5 bg-gray-50 border border-gray-200 rounded-lg p-1">
+    
+    {/* Tombol Minus (-): Hanya dirender jika userRole adalah 'owner' */}
+    {userRole === 'owner' && (
+      <button
+        type="button"
+        onClick={() => handleQuickStockUpdate(p.id, p.stock, -1)}
+        disabled={p.stock <= 0}
+        className="w-6 h-6 flex items-center justify-center bg-white hover:bg-rose-50 text-rose-600 border border-gray-200 rounded font-bold text-xs shadow-sm disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+        title="Kurangi 1 Stok"
+      >
+        -
+      </button>
+    )}
+
+    {/* Angka Stok (Selalu tampil untuk owner maupun kasir) */}
+    <span className={`px-2 font-bold text-xs ${
+      p.stock === 0
+        ? 'text-rose-600'
+        : p.stock <= 5
+        ? 'text-amber-600'
+        : 'text-emerald-700'
+    }`}>
+      {p.stock} <span className="text-[10px] font-normal text-gray-500">{p.unit || 'pcs'}</span>
+    </span>
+
+    {/* Tombol Plus (+): Selalu tampil untuk owner dan kasir */}
+    <button
+      type="button"
+      onClick={() => handleQuickStockUpdate(p.id, p.stock, 1)}
+      className="w-6 h-6 flex items-center justify-center bg-white hover:bg-emerald-50 text-emerald-600 border border-gray-200 rounded font-bold text-xs shadow-sm transition-colors"
+      title="Tambah 1 Stok"
+    >
+      +
+    </button>
+
+  </div>
+</td>
 
                         {/* Aksi Edit/Hapus - Khusus Owner */}
                         {userRole === 'owner' && (

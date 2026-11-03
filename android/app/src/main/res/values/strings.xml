@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Access Kasir</string>
+    <string name="title_activity_main">Access Kasir</string>
+    <string name="package_name">com.accesskasir.app</string>
+    <string name="custom_url_scheme">com.accesskasir.app</string>
+</resources>
