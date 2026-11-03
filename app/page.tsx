@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { supabase } from '@/lib/supabase'
+import MembershipPage from './MembershipPage' // Sesuaikan path jika foldernya berbeda
 
 type Product = {
   id: number
@@ -1571,7 +1572,15 @@ if (showSplash) {
             >
               Utang Piutang
             </button>
-            {userRole === 'owner' && (
+<button
+  onClick={() => handleTabChange('membership')}
+  className={`px-4 py-1.5 rounded-md text-sm font-medium transition ${
+    activeTab === 'membership' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-600'
+  }`}
+>
+  Membership
+</button>
+           {userRole === 'owner' && (
             <button
               onClick={() => handleTabChange('promos')}
               className={`px-4 py-1.5 rounded-md text-sm font-medium transition ${
@@ -1581,6 +1590,7 @@ if (showSplash) {
               Diskon & Promo
             </button>
             )}
+            
             <button
               onClick={() => handleTabChange('pos')}
               className={`px-4 py-1.5 rounded-md text-sm font-medium transition ${
@@ -2197,6 +2207,10 @@ if (showSplash) {
           </div>
         </div>
       )}
+
+{activeTab === 'membership' && (
+  <MembershipPage storeId={currentStoreId} userRole={userRole} />
+)}
 
      {activeTab === 'voc' && (
         <div className="space-y-6 max-w-6xl mx-auto p-4">
