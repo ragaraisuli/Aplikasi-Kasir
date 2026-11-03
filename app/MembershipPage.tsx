@@ -103,10 +103,12 @@ export default function MembershipPage({ storeId, userRole }: MembershipPageProp
     }
   }
 
-  const handleSaveSettings = async (e: React.FormEvent) => {
+const handleSaveSettings = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!storeId) return
     setIsSavingSetting(true)
+
+    const newPointValue = Number(pointSettings.point_value_rupiah)
 
     const { error } = await supabase
       .from('store_point_settings')
@@ -114,10 +116,11 @@ export default function MembershipPage({ storeId, userRole }: MembershipPageProp
         store_id: storeId,
         min_purchase: Number(pointSettings.min_purchase),
         points_earned: Number(pointSettings.points_earned),
-        point_value_rupiah: Number(pointSettings.point_value_rupiah),
+        point_value_rupiah: newPointValue,
       }, { onConflict: 'store_id' })
 
     setIsSavingSetting(false)
+
     if (error) {
       alert('Gagal menyimpan pengaturan: ' + error.message)
     } else {
