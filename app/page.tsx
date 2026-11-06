@@ -4153,92 +4153,99 @@ onClick={() => handleOpenPayModal(d)}
         </div>
       )}
 
-      {selectedTransaction && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white p-6 rounded-2xl max-w-md w-full shadow-xl space-y-4 font-mono">
-            
-{/* HEADER TOKO PADA STRUK */}
-<div className="text-center border-b border-dashed pb-3">
-  <h3 className="font-bold text-base text-gray-900 uppercase">
-    {storeProfile.store_name || 'POS SaaS Toko'}
-  </h3>
-  <p className="text-[11px] text-gray-500 mt-0.5">
-    {storeProfile.address || '-'}
-  </p>
-  <p className="text-[11px] text-gray-500">
-    Telp/WA: {storeProfile.phone || '-'}
-  </p>
-</div>
-            
-            <div className="space-y-1 text-xs text-gray-600 border-b border-dashed pb-3">
-              <p><span className="font-semibold">ID Transaksi:</span> #{selectedTransaction.id}</p>
-              <p><span className="font-semibold">Waktu:</span> {new Date(selectedTransaction.created_at).toLocaleString('id-ID')}</p>
-              <p><span className="font-semibold">Kasir:</span> {selectedTransaction.cashier_name && selectedTransaction.cashier_name !== 'Kasir'
-    ? selectedTransaction.cashier_name
-    : userName || cashierName}</p>
-              <p>
-                <span className="font-semibold">Metode Pembayaran:</span>{' '}
-                <span className="font-bold text-blue-600">
-                  {selectedTransaction.payment_method === 'Utang' ? 'Belum Lunas' : selectedTransaction.payment_method || 'Tunai'}
-                </span>
-              </p>
-            </div>
+{/* Visualisasi Modal Struk */}
+{selectedTransaction && (
+  <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+    <div className="bg-white p-6 rounded-2xl max-w-md w-full shadow-xl space-y-4 font-mono text-sm">
+      
+      {/* HEADER TOKO PADA STRUK */}
+      <div className="text-center border-b border-dashed pb-3">
+        <h3 className="font-bold text-lg text-gray-900 uppercase">
+          {storeProfile.store_name || 'POS SaaS Toko'}
+        </h3>
+        <p className="text-xs text-gray-600 mt-0.5">
+          {storeProfile.address || '-'}
+        </p>
+        <p className="text-xs text-gray-600">
+          Telp/WA: {storeProfile.phone || '-'}
+        </p>
+      </div>
+      
+      {/* INFORMASI TRANSAKSI */}
+      <div className="space-y-1 text-xs sm:text-sm text-gray-700 border-b border-dashed pb-3">
+        <p><span className="font-semibold">ID Transaksi:</span> #{selectedTransaction.id}</p>
+        <p><span className="font-semibold">Waktu:</span> {new Date(selectedTransaction.created_at).toLocaleString('id-ID')}</p>
+        <p><span className="font-semibold">Kasir:</span> {selectedTransaction.cashier_name && selectedTransaction.cashier_name !== 'Kasir'
+          ? selectedTransaction.cashier_name
+          : userName || cashierName}</p>
+        <p>
+          <span className="font-semibold">Metode Pembayaran:</span>{' '}
+          <span className="font-bold text-blue-600">
+            {selectedTransaction.payment_method === 'Utang' ? 'Belum Lunas' : selectedTransaction.payment_method || 'Tunai'}
+          </span>
+        </p>
+      </div>
 
-            <div className="border-b border-dashed py-3 space-y-2 max-h-48 overflow-y-auto">
-              <p className="text-xs font-bold text-gray-500 uppercase">Daftar Belanja:</p>
-              {transactionItems.length === 0 ? (
-                <p className="text-xs text-gray-400 italic">Memuat rincian item...</p>
-              ) : (
-                transactionItems.map((item) => (
-                  <div key={item.id} className="flex justify-between items-center text-xs">
-                    <div>
-                      <p className="font-medium text-gray-800">{item.product_name}</p>
-                      <p className="text-gray-400">Rp {item.price.toLocaleString('id-ID')} x {item.qty}</p>
-                    </div>
-                    <p className="font-bold text-gray-800">Rp {(item.price * item.qty).toLocaleString('id-ID')}</p>
-                  </div>
-                ))
-              )}
+      {/* DAFTAR BELANJA */}
+      <div className="border-b border-dashed py-3 space-y-2 max-h-48 overflow-y-auto">
+        <p className="text-xs font-bold text-gray-600 uppercase">Daftar Belanja:</p>
+        {transactionItems.length === 0 ? (
+          <p className="text-xs text-gray-400 italic">Memuat rincian item...</p>
+        ) : (
+          transactionItems.map((item) => (
+            <div key={item.id} className="flex justify-between items-center text-xs sm:text-sm">
+              <div>
+                <p className="font-medium text-gray-900">{item.product_name}</p>
+                <p className="text-gray-500 text-[11px] sm:text-xs">Rp {item.price.toLocaleString('id-ID')} x {item.qty}</p>
+              </div>
+              <p className="font-bold text-gray-900">Rp {(item.price * item.qty).toLocaleString('id-ID')}</p>
             </div>
+          ))
+        )}
+      </div>
 
-            <div className="flex justify-between font-bold text-sm text-gray-800 pt-1">
-              <span>Total Pembayaran:</span>
-              <span className="text-blue-600">Rp {(selectedTransaction.total_amount || 0).toLocaleString('id-ID')}</span>
-            </div>
+      {/* TOTAL PEMBAYARAN */}
+      <div className="flex justify-between font-bold text-base sm:text-lg text-gray-900 pt-1">
+        <span>Total Pembayaran:</span>
+        <span className="text-blue-600">Rp {(selectedTransaction.total_amount || 0).toLocaleString('id-ID')}</span>
+      </div>
 
-            {/* FOOTER / UCAPAN TERIMA KASIH */}
-            <div className="text-center pt-3 border-t border-dashed text-xs text-gray-500 space-y-1">
-              <p className="font-semibold text-gray-700">*** Terima Kasih ***</p>
-              <p className="text-[11px]">Silakan Datang Kembali!</p>
-              <p className="text-[10px] text-gray-400 mt-2">Barang yang sudah dibeli tidak dapat ditukar/dikembalikan.</p>
-            
-{/* Tambahan QR Code untuk Feedback Pelanggan */}
-  <div className="flex flex-col items-center justify-center pt-2">
-    <img 
-      src={qrCodeImageUrl} 
-      alt="QR Code Feedback" 
-      className="w-20 h-20 object-contain"
-    />
-    <span className="text-[9px] text-gray-600 mt-1 font-medium">Scan untuk Beri Ulasan / Saran</span>
-  </div>
-</div>
-            <div className="flex space-x-2 pt-2">
-              <button
-                onClick={() => window.print()}
-                className="flex-1 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-xs shadow font-sans"
-              >
-                Cetak Struk
-              </button>
-              <button
-                onClick={() => setSelectedTransaction(null)}
-                className="flex-1 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold rounded-xl text-xs font-sans"
-              >
-                Tidak Cetak / Tutup
-              </button>
-            </div>
-          </div>
+      {/* FOOTER / UCAPAN TERIMA KASIH */}
+      <div className="text-center pt-3 border-t border-dashed text-xs text-gray-600 space-y-1">
+        <p className="font-semibold text-gray-800 text-sm">*** Terima Kasih ***</p>
+        <p className="text-xs">Silakan Datang Kembali!</p>
+        <p className="text-[11px] text-gray-400 mt-2">Barang yang sudah dibeli tidak dapat ditukar/dikembalikan.</p>
+      
+        {/* Tambahan QR Code untuk Feedback Pelanggan */}
+        <div className="flex flex-col items-center justify-center pt-2">
+          <img 
+            src={qrCodeImageUrl} 
+            alt="QR Code Feedback" 
+            className="w-20 h-20 object-contain"
+          />
+          <span className="text-[10px] text-gray-600 mt-1 font-medium">Scan untuk Beri Ulasan / Saran</span>
         </div>
-      )}
+      </div>
+
+      {/* TOMBOL AKSI */}
+      <div className="flex space-x-2 pt-2">
+        <button
+          onClick={() => window.print()}
+          className="flex-1 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-xs sm:text-sm shadow font-sans"
+        >
+          Cetak Struk
+        </button>
+        <button
+          onClick={() => setSelectedTransaction(null)}
+          className="flex-1 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold rounded-xl text-xs sm:text-sm font-sans"
+        >
+          Tidak Cetak / Tutup
+        </button>
+      </div>
+
+    </div>
+  </div>
+)}
 
       {isPayModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
