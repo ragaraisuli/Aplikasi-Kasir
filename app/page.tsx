@@ -97,6 +97,11 @@ export default function KasirPage() {
   const [selectedDebt, setSelectedDebt] = useState<any>(null)
   const [paymentInput, setPaymentInput] = useState('')
 
+  const [profitYear, setProfitYear] = useState(() => new Date().getFullYear().toString());
+  const [profitMonth, setProfitMonth] = useState('ALL');
+  const [profitCategory, setProfitCategory] = useState('ALL');
+
+
   // State untuk Membership di Kasir (POS)
   const [activeMember, setActiveMember] = useState<any | null>(null);
   const [memberSearchTerm, setMemberSearchTerm] = useState('');
@@ -1544,7 +1549,8 @@ const productProfitabilityList = products.map((p: any) => {
 const filteredProfitabilityList = productProfitabilityList.filter((p: any) => {
   const isSold = p.soldQty > 0;
   const matchesSearch = p.name.toLowerCase().includes((profitabilitySearchTerm || '').toLowerCase());
-  return isSold && matchesSearch;
+  const matchesCategory = profitCategory === 'ALL' || p.category?.toLowerCase() === profitCategory.toLowerCase();
+  return isSold && matchesSearch && matchesCategory;
 });
     
   // 3. Analisis Jam Sibuk (Peak Hours)
@@ -2112,20 +2118,70 @@ if (showSplash) {
 
 {/* Tabel Analisis Profitabilitas */}
 <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-4">
-  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+  <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-3">
     <div>
       <h3 className="text-base font-bold text-gray-800">📈 Analisis Profitabilitas</h3>
-      <p className="text-xs text-gray-500">Mengetahui produk mana yang memberikan laba dan margin keuntungan terbesar.</p>
+      <p className="text-xs text-gray-500">Mengetahui produk dan kategori mana yang memberikan laba terbesar.</p>
     </div>
-    {/* Input Mesin Pencarian */}
-    <input
-      type="text"
-      placeholder="🔍 Cari nama produk..."
-      value={profitabilitySearchTerm}
-      onChange={(e) => setProfitabilitySearchTerm(e.target.value)}
-      className="px-3 py-1.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-800 text-sm w-full sm:w-60 shadow-sm"
-    />
+
+    {/* Kumpulan Filter & Pencarian */}
+    <div className="flex flex-wrap items-center gap-2 w-full lg:w-auto">
+      {/* Filter Kategori */}
+      <select
+        value={profitCategory}
+        onChange={(e) => setProfitCategory(e.target.value)}
+        className="px-3 py-1.5 border rounded-lg text-xs bg-white text-gray-800 font-semibold shadow-sm"
+      >
+        <option value="ALL">Semua Kategori</option>
+        {categories.map((cat) => (
+          <option key={cat.id} value={cat.name}>{cat.name}</option>
+        ))}
+      </select>
+
+      {/* Filter Bulan */}
+      <select
+        value={profitMonth}
+        onChange={(e) => {
+          setProfitMonth(e.target.value);
+          if (e.target.value !== 'ALL') {
+            const year = profitYear;
+            const month = e.target.value;
+            const lastDay = new Date(Number(year), Number(month), 0).getDate();
+            setStartDate(`${year}-${month}-01`);
+            setEndDate(`${year}-${month}-${lastDay}`);
+          } else {
+            setStartDate('');
+            setEndDate('');
+          }
+        }}
+        className="px-3 py-1.5 border rounded-lg text-xs bg-white text-gray-800 font-semibold shadow-sm"
+      >
+        <option value="ALL">Semua Bulan</option>
+        <option value="01">Januari</option>
+        <option value="02">Februari</option>
+        <option value="03">Maret</option>
+        <option value="04">April</option>
+        <option value="05">Mei</option>
+        <option value="06">Juni</option>
+        <option value="07">Juli</option>
+        <option value="08">Agustus</option>
+        <option value="09">September</option>
+        <option value="10">Oktober</option>
+        <option value="11">November</option>
+        <option value="12">Desember</option>
+      </select>
+
+      {/* Input Pencarian Nama Produk */}
+      <input
+        type="text"
+        placeholder="🔍 Cari produk..."
+        value={profitabilitySearchTerm}
+        onChange={(e) => setProfitabilitySearchTerm(e.target.value)}
+        className="px-3 py-1.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-800 text-xs w-full sm:w-48 shadow-sm"
+      />
+    </div>
   </div>
+
   <div className="overflow-x-auto">
     <table className="w-full text-left border-collapse">
       <thead>
@@ -2143,8 +2199,8 @@ if (showSplash) {
         {filteredProfitabilityList.length === 0 ? (
           <tr>
             <td colSpan={7} className="text-center py-8 text-gray-400">
-              {profitabilitySearchTerm
-                ? 'Tidak ada produk terjual yang cocok dengan pencarian.'
+              {profitabilitySearchTerm || profitCategory !== 'ALL' || profitMonth !== 'ALL'
+                ? 'Tidak ada data produk terjual yang cocok dengan filter.'
                 : 'Belum ada produk yang terjual.'}
             </td>
           </tr>
