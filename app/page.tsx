@@ -1530,6 +1530,7 @@ const productProfitabilityList = products.map((p: any) => {
   return {
     id: p.id,
     name: p.name,
+    category: p.category || 'Umum',
     unit: p.unit || 'pcs',
     soldQty,
     totalRevenue,
@@ -2109,7 +2110,7 @@ if (showSplash) {
 
           </div>
 
-{/* Tabel Analisis Profitabilitas per Produk */}
+{/* Tabel Analisis Profitabilitas */}
 <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-4">
   <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
     <div>
@@ -2141,7 +2142,7 @@ if (showSplash) {
       <tbody className="text-xs divide-y">
         {filteredProfitabilityList.length === 0 ? (
           <tr>
-            <td colSpan={6} className="text-center py-8 text-gray-400">
+            <td colSpan={7} className="text-center py-8 text-gray-400">
               {profitabilitySearchTerm
                 ? 'Tidak ada produk terjual yang cocok dengan pencarian.'
                 : 'Belum ada produk yang terjual.'}
@@ -2150,6 +2151,11 @@ if (showSplash) {
         ) : (
           filteredProfitabilityList.map((p: any) => (
             <tr key={p.id || p.name} className="hover:bg-gray-50/50">
+              <td className="p-3 text-gray-600">
+                <span className="px-2 py-0.5 rounded text-[11px] font-semibold bg-gray-100 text-gray-700">
+                  {p.category}
+                </span>
+              </td>
               <td className="p-3 font-medium text-gray-800">{p.name}</td>
               <td className="p-3 text-gray-600">
                 <span className="px-2.5 py-0.5 rounded-full font-semibold bg-blue-50 text-blue-700">
