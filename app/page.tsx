@@ -318,7 +318,7 @@ const handlePrintClick = () => {
   const [restockType, setRestockType] = useState<'add' | 'reduce'>('add')
 
   const [profitabilitySearchTerm, setProfitabilitySearchTerm] = useState('');
-
+  const [monthlyReportCategory, setMonthlyReportCategory] = useState('ALL');
   // State Form Produk Baru / Edit
   const [editingId, setEditingId] = useState<number | null>(null)
   const [newName, setNewName] = useState('')
@@ -364,7 +364,7 @@ const productMonthlySalesSummary = products.map((p) => {
     '07': 0, '08': 0, '09': 0, '10': 0, '11': 0, '12': 0
   };
   let totalYearQty = 0;
-
+  
   transactions.forEach((t: any) => {
     if (!t.created_at) return;
     const trxDate = new Date(t.created_at);
@@ -394,7 +394,14 @@ const productMonthlySalesSummary = products.map((p) => {
   };
 }).filter((p) => p.totalYearQty > 0); // Hanya tampilkan produk yang ada penjualan di tahun tersebut
 
-
+// Filter data bulanan berdasarkan kategori yang dipilih
+const filteredMonthlySummary = productMonthlySalesSummary.filter((p: any) => {
+  const matchesCategory = 
+    monthlyReportCategory === 'ALL' || 
+    (p.category && p.category.toLowerCase() === monthlyReportCategory.toLowerCase());
+  
+  return matchesCategory;
+});
 
 // Fungsi untuk mengunduh laporan ke file CSV (Format standar Excel Indonesia menggunakan titik koma ;)
   const exportToCSV = () => {
@@ -2329,20 +2336,38 @@ if (showSplash) {
       <p className="text-xs text-gray-500">Melihat total kuantitas produk yang terjual setiap bulan dalam tahun pilihan.</p>
     </div>
 
-    {/* Pilihan Tahun Laporan */}
-    <div className="flex items-center gap-2">
-      <span className="text-xs font-semibold text-gray-600">Pilih Tahun:</span>
-      <select
-        value={selectedReportYear}
-        onChange={(e) => setSelectedReportYear(e.target.value)}
-        className="px-3 py-1.5 border rounded-lg text-xs bg-white text-gray-800 font-bold shadow-sm"
-      >
-        <option value="2026">2026</option>
-        <option value="2027">2027</option>
-        <option value="2028">2028</option>
-        <option value="2029">2029</option>
-        <option value="2030">2030</option>
-      </select>
+    {/* Kumpulan Filter (Kategori & Tahun) */}
+    <div className="flex flex-wrap items-center gap-3">
+      {/* Dropdown Filter Kategori */}
+      <div className="flex items-center gap-1.5">
+        <span className="text-xs font-semibold text-gray-600">Kategori:</span>
+        <select
+          value={monthlyReportCategory}
+          onChange={(e) => setMonthlyReportCategory(e.target.value)}
+          className="px-3 py-1.5 border rounded-lg text-xs bg-white text-gray-800 font-bold shadow-sm"
+        >
+          <option value="ALL">Semua Kategori</option>
+          {categories.map((cat) => (
+            <option key={cat.id} value={cat.name}>{cat.name}</option>
+          ))}
+        </select>
+      </div>
+
+      {/* Pilihan Tahun Laporan */}
+      <div className="flex items-center gap-1.5">
+        <span className="text-xs font-semibold text-gray-600">Pilih Tahun:</span>
+        <select
+          value={selectedReportYear}
+          onChange={(e) => setSelectedReportYear(e.target.value)}
+          className="px-3 py-1.5 border rounded-lg text-xs bg-white text-gray-800 font-bold shadow-sm"
+        >
+          <option value="2026">2026</option>
+          <option value="2027">2027</option>
+          <option value="2028">2028</option>
+          <option value="2029">2029</option>
+          <option value="2030">2030</option>
+        </select>
+      </div>
     </div>
   </div>
 
@@ -2360,14 +2385,14 @@ if (showSplash) {
         </tr>
       </thead>
       <tbody className="text-xs divide-y">
-        {productMonthlySalesSummary.length === 0 ? (
+        {filteredMonthlySummary.length === 0 ? (
           <tr>
             <td colSpan={15} className="text-center py-8 text-gray-400">
-              Belum ada data penjualan produk pada tahun {selectedReportYear}.
+              Belum ada data penjualan produk untuk kategori ini pada tahun {selectedReportYear}.
             </td>
           </tr>
         ) : (
-          productMonthlySalesSummary.map((p) => (
+          filteredMonthlySummary.map((p) => (
             <tr key={p.id} className="hover:bg-gray-50/50">
               <td className="p-2.5 font-medium text-gray-800">{p.name}</td>
               <td className="p-2.5 text-gray-500">
@@ -2393,18 +2418,19 @@ if (showSplash) {
     </table>
   </div>
 
-  {/* Visualisasi Grafik Batang Sederhana (Total Penjualan per Bulan) */}
+  {/* Visualisasi Grafik Batang Sederhana (Mengikuti Filter Kategori) */}
   <div className="pt-4 border-t space-y-3">
-    <h4 className="text-xs font-bold text-gray-700 uppercase">📈 Grafik Total Kuantitas Terjual Per Bulan ({selectedReportYear})</h4>
+    <h4 className="text-xs font-bold text-gray-700 uppercase">
+      📈 Grafik Total Kuantitas Terjual Per Bulan ({selectedReportYear} {monthlyReportCategory !== 'ALL' ? `- ${monthlyReportCategory}` : ''})
+    </h4>
     
     <div className="grid grid-cols-12 gap-2 items-end h-40 bg-gray-50 p-4 rounded-xl border">
       {monthsList.map((m) => {
-        // Hitung total seluruh produk terjual di bulan tersebut
-        const totalMonthQty = productMonthlySalesSummary.reduce((sum, p) => sum + (p.monthlyQty[m.code] || 0), 0);
+        // Hitung total dari data yang sudah terfilter kategori
+        const totalMonthQty = filteredMonthlySummary.reduce((sum, p) => sum + (p.monthlyQty[m.code] || 0), 0);
         
-        // Cari nilai maksimum dalam 1 bulan untuk skala tinggi grafik (%)
         const maxMonthVal = Math.max(
-          ...monthsList.map(mo => productMonthlySalesSummary.reduce((s, p) => s + (p.monthlyQty[mo.code] || 0), 0)),
+          ...monthsList.map(mo => filteredMonthlySummary.reduce((s, p) => s + (p.monthlyQty[mo.code] || 0), 0)),
           1
         );
         const barHeightPercent = Math.round((totalMonthQty / maxMonthVal) * 100);
