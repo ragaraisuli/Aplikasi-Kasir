@@ -4173,7 +4173,7 @@ onClick={() => handleOpenPayModal(d)}
       
       {/* INFORMASI TRANSAKSI */}
       <div className="space-y-1 text-xs sm:text-sm text-gray-700 border-b border-dashed pb-3">
-        <p><span className="font-semibold">ID Transaksi:</span> #{selectedTransaction.id}</p>
+<p><span className="font-semibold">ID Transaksi:</span> #{selectedTransaction.id ? selectedTransaction.id.slice(0, 8).toUpperCase() : '-'}</p>
         <p><span className="font-semibold">Waktu:</span> {new Date(selectedTransaction.created_at).toLocaleString('id-ID')}</p>
         <p><span className="font-semibold">Kasir:</span> {selectedTransaction.cashier_name && selectedTransaction.cashier_name !== 'Kasir'
           ? selectedTransaction.cashier_name
