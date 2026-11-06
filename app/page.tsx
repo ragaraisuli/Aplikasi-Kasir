@@ -2141,17 +2141,38 @@ if (showSplash) {
         ))}
       </select>
 
+      {/* Filter Tahun */}
+      <select
+        value={profitYear}
+        onChange={(e) => {
+          const newYear = e.target.value;
+          setProfitYear(newYear);
+          // Jika bulan sedang dipilih, update otomatis rentang tanggal berdasarkan tahun baru
+          if (profitMonth !== 'ALL') {
+            const lastDay = new Date(Number(newYear), Number(profitMonth), 0).getDate();
+            setStartDate(`${newYear}-${profitMonth}-01`);
+            setEndDate(`${newYear}-${profitMonth}-${lastDay}`);
+          }
+        }}
+        className="px-3 py-1.5 border rounded-lg text-xs bg-white text-gray-800 font-semibold shadow-sm"
+      >
+        <option value="2026">2026</option>
+        <option value="2027">2027</option>
+        <option value="2028">2028</option>
+        <option value="2029">2029</option>
+        <option value="2030">2030</option>
+      </select>
+
       {/* Filter Bulan */}
       <select
         value={profitMonth}
         onChange={(e) => {
-          setProfitMonth(e.target.value);
-          if (e.target.value !== 'ALL') {
-            const year = profitYear;
-            const month = e.target.value;
-            const lastDay = new Date(Number(year), Number(month), 0).getDate();
-            setStartDate(`${year}-${month}-01`);
-            setEndDate(`${year}-${month}-${lastDay}`);
+          const month = e.target.value;
+          setProfitMonth(month);
+          if (month !== 'ALL') {
+            const lastDay = new Date(Number(profitYear), Number(month), 0).getDate();
+            setStartDate(`${profitYear}-${month}-01`);
+            setEndDate(`${profitYear}-${month}-${lastDay}`);
           } else {
             setStartDate('');
             setEndDate('');
