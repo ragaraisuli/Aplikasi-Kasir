@@ -319,6 +319,7 @@ const handlePrintClick = () => {
 
   const [profitabilitySearchTerm, setProfitabilitySearchTerm] = useState('');
   const [monthlyReportCategory, setMonthlyReportCategory] = useState('ALL');
+  const [selectedChartProduct, setSelectedChartProduct] = useState<string>('ALL');
   // State Form Produk Baru / Edit
   const [editingId, setEditingId] = useState<number | null>(null)
   const [newName, setNewName] = useState('')
@@ -2418,39 +2419,70 @@ if (showSplash) {
     </table>
   </div>
 
-  {/* Visualisasi Grafik Batang Sederhana (Mengikuti Filter Kategori) */}
-  <div className="pt-4 border-t space-y-3">
+{/* Visualisasi Grafik Batang per Produk */}
+<div className="pt-4 border-t space-y-4">
+  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
     <h4 className="text-xs font-bold text-gray-700 uppercase">
-      📈 Grafik Total Kuantitas Terjual Per Bulan ({selectedReportYear} {monthlyReportCategory !== 'ALL' ? `- ${monthlyReportCategory}` : ''})
+      📈 Grafik Penjualan Bulanan ({selectedReportYear})
     </h4>
-    
-    <div className="grid grid-cols-12 gap-2 items-end h-40 bg-gray-50 p-4 rounded-xl border">
-      {monthsList.map((m) => {
-        // Hitung total dari data yang sudah terfilter kategori
-        const totalMonthQty = filteredMonthlySummary.reduce((sum, p) => sum + (p.monthlyQty[m.code] || 0), 0);
-        
-        const maxMonthVal = Math.max(
+
+    {/* Dropdown Pilih Produk untuk Grafik */}
+    <div className="flex items-center gap-2">
+      <span className="text-xs font-semibold text-gray-600">Pilih Produk:</span>
+      <select
+        value={selectedChartProduct}
+        onChange={(e) => setSelectedChartProduct(e.target.value)}
+        className="px-3 py-1.5 border rounded-lg text-xs bg-white text-gray-800 font-bold shadow-sm max-w-[200px]"
+      >
+        <option value="ALL">Semua Produk (Total Kategori)</option>
+        {filteredMonthlySummary.map((p) => (
+          <option key={p.id} value={p.id}>{p.name}</option>
+        ))}
+      </select>
+    </div>
+  </div>
+  
+  <div className="grid grid-cols-12 gap-2 items-end h-40 bg-gray-50 p-4 rounded-xl border">
+    {monthsList.map((m) => {
+      let totalMonthQty = 0;
+      let maxMonthVal = 1;
+
+      if (selectedChartProduct === 'ALL') {
+        totalMonthQty = filteredMonthlySummary.reduce((sum, p) => sum + (p.monthlyQty[m.code] || 0), 0);
+        maxMonthVal = Math.max(
           ...monthsList.map(mo => filteredMonthlySummary.reduce((s, p) => s + (p.monthlyQty[mo.code] || 0), 0)),
           1
         );
-        const barHeightPercent = Math.round((totalMonthQty / maxMonthVal) * 100);
-
-        return (
-          <div key={m.code} className="flex flex-col items-center h-full justify-end space-y-1">
-            <span className="text-[10px] font-bold text-gray-600">{totalMonthQty > 0 ? totalMonthQty : ''}</span>
-            <div className="w-full bg-blue-100 rounded-t-lg h-full flex items-end overflow-hidden">
-              <div 
-                className="w-full bg-blue-600 rounded-t-lg transition-all duration-500" 
-                style={{ height: `${Math.max(barHeightPercent, 4)}%` }}
-                title={`${m.name}: ${totalMonthQty} item`}
-              ></div>
-            </div>
-            <span className="text-[10px] font-semibold text-gray-500">{m.name}</span>
-          </div>
+      } else {
+        const foundProduct = filteredMonthlySummary.find((p) => String(p.id) === String(selectedChartProduct));
+        totalMonthQty = foundProduct ? (foundProduct.monthlyQty[m.code] || 0) : 0;
+        maxMonthVal = Math.max(
+          ...monthsList.map(mo => {
+            const fp = filteredMonthlySummary.find((p) => String(p.id) === String(selectedChartProduct));
+            return fp ? (fp.monthlyQty[mo.code] || 0) : 0;
+          }),
+          1
         );
-      })}
-    </div>
+      }
+
+      const barHeightPercent = Math.round((totalMonthQty / maxMonthVal) * 100);
+
+      return (
+        <div key={m.code} className="flex flex-col items-center h-full justify-end space-y-1">
+          <span className="text-[10px] font-bold text-gray-600">{totalMonthQty > 0 ? totalMonthQty : ''}</span>
+          <div className="w-full bg-blue-100 rounded-t-lg h-full flex items-end overflow-hidden">
+            <div 
+              className="w-full bg-blue-600 rounded-t-lg transition-all duration-500" 
+              style={{ height: `${Math.max(barHeightPercent, 4)}%` }}
+              title={`${m.name}: ${totalMonthQty} item`}
+            ></div>
+          </div>
+          <span className="text-[10px] font-semibold text-gray-500">{m.name}</span>
+        </div>
+      );
+    })}
   </div>
+</div>
 </div>
 
         </div>
