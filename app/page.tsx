@@ -332,6 +332,64 @@ const handlePrintClick = () => {
   const [newImageUrl, setNewImageUrl] = useState('')
 
   const [userName, setUserName] = useState('Pengguna');
+ 
+  // State untuk memilih tahun pada laporan tren bulanan produk
+const [selectedReportYear, setSelectedReportYear] = useState(() => new Date().getFullYear().toString());
+
+// Array daftar bulan untuk mapping tabel & grafik
+const monthsList = [
+  { code: '01', name: 'Jan' },
+  { code: '02', name: 'Feb' },
+  { code: '03', name: 'Mar' },
+  { code: '04', name: 'Apr' },
+  { code: '05', name: 'Mei' },
+  { code: '06', name: 'Jun' },
+  { code: '07', name: 'Jul' },
+  { code: '08', name: 'Agt' },
+  { code: '09', name: 'Sep' },
+  { code: '10', name: 'Okt' },
+  { code: '11', name: 'Nov' },
+  { code: '12', name: 'Des' },
+];
+
+// Rekap jumlah terjual per produk berdasarkan bulan untuk tahun yang dipilih
+const productMonthlySalesSummary = products.map((p) => {
+  const monthlyQty: { [key: string]: number } = {
+    '01': 0, '02': 0, '03': 0, '04': 0, '05': 0, '06': 0,
+    '07': 0, '08': 0, '09': 0, '10': 0, '11': 0, '12': 0
+  };
+  let totalYearQty = 0;
+
+  transactions.forEach((t: any) => {
+    if (!t.created_at) return;
+    const trxDate = new Date(t.created_at);
+    const trxYear = trxDate.getFullYear().toString();
+    const trxMonth = (trxDate.getMonth() + 1).toString().padStart(2, '0');
+
+    // Filter sesuai tahun yang dipilih owner
+    if (trxYear === selectedReportYear) {
+      const items = t.transaction_items || t.items || [];
+      items.forEach((item: any) => {
+        if (item.product_id === p.id || item.product_name === p.name || item.name === p.name) {
+          const qty = Number(item.qty || item.quantity) || 0;
+          monthlyQty[trxMonth] = (monthlyQty[trxMonth] || 0) + qty;
+          totalYearQty += qty;
+        }
+      });
+    }
+  });
+
+  return {
+    id: p.id,
+    name: p.name,
+    category: p.category || 'Umum',
+    unit: p.unit || 'pcs',
+    monthlyQty,
+    totalYearQty,
+  };
+}).filter((p) => p.totalYearQty > 0); // Hanya tampilkan produk yang ada penjualan di tahun tersebut
+
+
 
 // Fungsi untuk mengunduh laporan ke file CSV (Format standar Excel Indonesia menggunakan titik koma ;)
   const exportToCSV = () => {
@@ -2255,6 +2313,112 @@ if (showSplash) {
         )}
       </tbody>
     </table>
+  </div>
+</div>
+
+{/* Laporan Penjualan Produk per Bulan & Grafik Tahunan */}
+<div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-6 mt-6">
+  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+    <div>
+      <h3 className="text-base font-bold text-gray-800">📊 Tren Penjualan Produk Bulanan ({selectedReportYear})</h3>
+      <p className="text-xs text-gray-500">Melihat total kuantitas produk yang terjual setiap bulan dalam tahun pilihan.</p>
+    </div>
+
+    {/* Pilihan Tahun Laporan */}
+    <div className="flex items-center gap-2">
+      <span className="text-xs font-semibold text-gray-600">Pilih Tahun:</span>
+      <select
+        value={selectedReportYear}
+        onChange={(e) => setSelectedReportYear(e.target.value)}
+        className="px-3 py-1.5 border rounded-lg text-xs bg-white text-gray-800 font-bold shadow-sm"
+      >
+        <option value="2026">2026</option>
+        <option value="2027">2027</option>
+        <option value="2028">2028</option>
+        <option value="2029">2029</option>
+        <option value="2030">2030</option>
+      </select>
+    </div>
+  </div>
+
+  {/* Tabel Matriks Penjualan per Bulan */}
+  <div className="overflow-x-auto">
+    <table className="w-full text-left border-collapse min-w-[900px]">
+      <thead>
+        <tr className="border-b text-[11px] text-gray-500 bg-gray-50 uppercase">
+          <th className="p-2.5 font-semibold">Produk</th>
+          <th className="p-2.5 font-semibold">Kategori</th>
+          {monthsList.map((m) => (
+            <th key={m.code} className="p-2.5 font-semibold text-center">{m.name}</th>
+          ))}
+          <th className="p-2.5 font-semibold text-right">Total Tahun</th>
+        </tr>
+      </thead>
+      <tbody className="text-xs divide-y">
+        {productMonthlySalesSummary.length === 0 ? (
+          <tr>
+            <td colSpan={15} className="text-center py-8 text-gray-400">
+              Belum ada data penjualan produk pada tahun {selectedReportYear}.
+            </td>
+          </tr>
+        ) : (
+          productMonthlySalesSummary.map((p) => (
+            <tr key={p.id} className="hover:bg-gray-50/50">
+              <td className="p-2.5 font-medium text-gray-800">{p.name}</td>
+              <td className="p-2.5 text-gray-500">
+                <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-gray-100 text-gray-700">
+                  {p.category}
+                </span>
+              </td>
+              {monthsList.map((m) => {
+                const qty = p.monthlyQty[m.code] || 0;
+                return (
+                  <td key={m.code} className={`p-2.5 text-center font-medium ${qty > 0 ? 'text-blue-600 font-bold' : 'text-gray-300'}`}>
+                    {qty}
+                  </td>
+                );
+              })}
+              <td className="p-2.5 text-right font-extrabold text-emerald-600">
+                {p.totalYearQty} {p.unit}
+              </td>
+            </tr>
+          ))
+        )}
+      </tbody>
+    </table>
+  </div>
+
+  {/* Visualisasi Grafik Batang Sederhana (Total Penjualan per Bulan) */}
+  <div className="pt-4 border-t space-y-3">
+    <h4 className="text-xs font-bold text-gray-700 uppercase">📈 Grafik Total Kuantitas Terjual Per Bulan ({selectedReportYear})</h4>
+    
+    <div className="grid grid-cols-12 gap-2 items-end h-40 bg-gray-50 p-4 rounded-xl border">
+      {monthsList.map((m) => {
+        // Hitung total seluruh produk terjual di bulan tersebut
+        const totalMonthQty = productMonthlySalesSummary.reduce((sum, p) => sum + (p.monthlyQty[m.code] || 0), 0);
+        
+        // Cari nilai maksimum dalam 1 bulan untuk skala tinggi grafik (%)
+        const maxMonthVal = Math.max(
+          ...monthsList.map(mo => productMonthlySalesSummary.reduce((s, p) => s + (p.monthlyQty[mo.code] || 0), 0)),
+          1
+        );
+        const barHeightPercent = Math.round((totalMonthQty / maxMonthVal) * 100);
+
+        return (
+          <div key={m.code} className="flex flex-col items-center h-full justify-end space-y-1">
+            <span className="text-[10px] font-bold text-gray-600">{totalMonthQty > 0 ? totalMonthQty : ''}</span>
+            <div className="w-full bg-blue-100 rounded-t-lg h-full flex items-end overflow-hidden">
+              <div 
+                className="w-full bg-blue-600 rounded-t-lg transition-all duration-500" 
+                style={{ height: `${Math.max(barHeightPercent, 4)}%` }}
+                title={`${m.name}: ${totalMonthQty} item`}
+              ></div>
+            </div>
+            <span className="text-[10px] font-semibold text-gray-500">{m.name}</span>
+          </div>
+        );
+      })}
+    </div>
   </div>
 </div>
 
