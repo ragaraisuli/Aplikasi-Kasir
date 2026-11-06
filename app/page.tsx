@@ -263,7 +263,7 @@ useEffect(() => {
   
   // State Pembayaran Kasir & Utang
   const [cashPaid, setCashPaid] = useState('')
-  const [paymentMethod, setPaymentMethod] = useState<'Tunai' | 'QRIS' | 'Transfer' | 'Utang'>('Tunai')
+  const [paymentMethod, setPaymentMethod] = useState<'Tunai' | 'QRIS' | 'transfer/debit' | 'Utang'>('Tunai')
   const [customerName, setCustomerName] = useState('')
   const [customerPhone, setCustomerPhone] = useState('')
   const [appliedPromoCode, setAppliedPromoCode] = useState('')
@@ -2103,7 +2103,7 @@ if (showSplash) {
 <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-4">
   <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
     <div>
-      <h3 className="text-base font-bold text-gray-800">📈 Analisis Profitabilitas per Produk</h3>
+      <h3 className="text-base font-bold text-gray-800">📈 Analisis Profitabilitas</h3>
       <p className="text-xs text-gray-500">Mengetahui produk mana yang memberikan laba dan margin keuntungan terbesar.</p>
     </div>
     {/* Input Mesin Pencarian */}
@@ -2119,6 +2119,7 @@ if (showSplash) {
     <table className="w-full text-left border-collapse">
       <thead>
         <tr className="border-b text-xs text-gray-500 bg-gray-50">
+          <th className="p-3 font-semibold">Kategori</th>
           <th className="p-3 font-semibold">Nama Produk</th>
           <th className="p-3 font-semibold">Terjual</th>
           <th className="p-3 font-semibold">Total Omzet</th>
@@ -2271,7 +2272,7 @@ if (showSplash) {
                           <span className="bg-gray-100 px-2 py-1 rounded text-xs font-semibold">{t.cashier_name || userName}</span>
                         </td>
                         <td className="py-3 px-4">
-                          <span className={`px-2 py-1 rounded text-xs font-bold ${t.payment_method === 'Utang' ? 'bg-red-50 text-red-600' : t.payment_method === 'QRIS' ? 'bg-purple-50 text-purple-600' : t.payment_method === 'Transfer' ? 'bg-indigo-50 text-indigo-600' : 'bg-green-50 text-green-600'}`}>
+                          <span className={`px-2 py-1 rounded text-xs font-bold ${t.payment_method === 'Utang' ? 'bg-red-50 text-red-600' : t.payment_method === 'QRIS' ? 'bg-purple-50 text-purple-600' : t.payment_method === 'transfer/debit' ? 'bg-indigo-50 text-indigo-600' : 'bg-green-50 text-green-600'}`}>
                             {t.payment_method === 'Utang' ? 'Belum Lunas' : t.payment_method || 'Tunai'}
                           </span>
                         </td>
@@ -2723,7 +2724,7 @@ onClick={() => handleOpenPayModal(d)}
                   <option value="all">Semua Metode Pembayaran</option>
                   <option value="Tunai">Hanya Tunai</option>
                   <option value="QRIS">Hanya QRIS</option>
-                  <option value="Transfer">Hanya Transfer</option>
+                  <option value="transfer/debit">Hanya transfer/debit</option>
                   <option value="Utang">Hanya Utang</option>
                 </select>
               </div>
@@ -3220,7 +3221,7 @@ onClick={() => handleOpenPayModal(d)}
               <div>
                 <label className="block text-xs font-semibold text-gray-600 mb-1">Metode Pembayaran</label>
                 <div className="grid grid-cols-4 gap-1.5">
-                  {(['Tunai', 'QRIS', 'Transfer', 'Utang'] as const).map((method) => (
+                  {(['Tunai', 'QRIS', 'transfer/debit', 'Utang'] as const).map((method) => (
                     <button
                       key={method}
                       type="button"
@@ -3254,7 +3255,7 @@ onClick={() => handleOpenPayModal(d)}
                   </div>
                   <div className="flex justify-between items-center text-xs pt-1 border-t border-blue-200">
                     <span className="font-semibold text-gray-600">Kembalian:</span>
-                    <span className={`font-bold ${changeAmount >= 0 ? 'text-green-600' : 'text-red-500'}`}>
+                     <span className={`font-bold ${changeAmount >= 0 ? 'text-green-600' : 'text-red-500'}`}>
                       {cashPaid === '' ? 'Rp 0' : changeAmount >= 0 ? `Rp ${changeAmount.toLocaleString('id-ID')}` : 'Uang Kurang!'}
                     </span>
                   </div>
@@ -3284,7 +3285,7 @@ onClick={() => handleOpenPayModal(d)}
               ) : (
                 <div className="bg-purple-50 p-3 rounded-xl border border-purple-100 text-center">
                   <p className="text-xs font-bold text-purple-700">Pembayaran Non-Tunai ({paymentMethod})</p>
-                  <p className="text-[11px] text-purple-500 mt-0.5">Silakan scan QRIS / verifikasi transfer sejumlah total tagihan.</p>
+                  <p className="text-[11px] text-purple-500 mt-0.5">Silakan scan QRIS / verifikasi transfer/debit sejumlah total tagihan.</p>
                 </div>
               )}
 
