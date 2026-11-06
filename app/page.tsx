@@ -2432,7 +2432,7 @@ if (showSplash) {
       <select
         value={selectedChartProduct}
         onChange={(e) => setSelectedChartProduct(e.target.value)}
-        className="px-3 py-1.5 border rounded-lg text-xs bg-white text-gray-800 font-bold shadow-sm max-w-[200px]"
+        className="px-3 py-1.5 border rounded-lg text-xs bg-white text-gray-800 font-bold shadow-sm"
       >
         <option value="ALL">Semua Produk (Total Kategori)</option>
         {filteredMonthlySummary.map((p) => (
