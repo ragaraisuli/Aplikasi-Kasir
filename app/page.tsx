@@ -334,8 +334,13 @@ const handlePrintClick = () => {
   const [userName, setUserName] = useState('Pengguna');
  
   // State untuk memilih tahun pada laporan tren bulanan produk
-const [selectedReportYear, setSelectedReportYear] = useState(() => new Date().getFullYear().toString());
+// 1. Berikan nilai default statis untuk amannya saat prerender build
+const [selectedReportYear, setSelectedReportYear] = useState('2026');
 
+// 2. Update tahun secara otomatis di browser setelah halaman dimuat
+useEffect(() => {
+  setSelectedReportYear(new Date().getFullYear().toString());
+}, []);
 // Array daftar bulan untuk mapping tabel & grafik
 const monthsList = [
   { code: '01', name: 'Jan' },
