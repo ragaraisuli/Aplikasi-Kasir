@@ -710,16 +710,26 @@ useEffect(() => {
   }
 
 async function fetchTransactions() {
-    if (!currentStoreId) return;
-    const { data, error } = await supabase
-      .from('transactions')
-      .select('*, transaction_items(*)')
-      .eq('store_id', currentStoreId)
-      .order('created_at', { ascending: false });
-      
-    if (error) console.error('Gagal memuat transaksi:', error.message);
-    else if (data) setTransactions(data);
-  }
+  if (!currentStoreId) return;
+  const { data, error } = await supabase
+    .from('transactions')
+    .select(`
+      *,
+      transaction_items (
+        *,
+        products (
+          name,
+          category,
+          buy_price
+        )
+      )
+    `)
+    .eq('store_id', currentStoreId)
+    .order('created_at', { ascending: false });
+
+  if (error) console.error('Gagal memuat transaksi:', error.message);
+  else if (data) setTransactions(data);
+}
 
   async function fetchDebts() {
     if (!currentStoreId) return;
