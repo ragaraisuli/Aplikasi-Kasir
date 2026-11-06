@@ -97,17 +97,20 @@ export default function KasirPage() {
   const [selectedDebt, setSelectedDebt] = useState<any>(null)
   const [paymentInput, setPaymentInput] = useState('')
 
-  const [profitYear, setProfitYear] = useState(() => new Date().getFullYear().toString());
+  const [profitYear, setProfitYear] = useState('2026');
   const [profitMonth, setProfitMonth] = useState('ALL');
   const [profitCategory, setProfitCategory] = useState('ALL');
 
+useEffect(() => {
+  setProfitYear(new Date().getFullYear().toString());
+}, []);
 
   // State untuk Membership di Kasir (POS)
   const [activeMember, setActiveMember] = useState<any | null>(null);
   const [memberSearchTerm, setMemberSearchTerm] = useState('');
   const [memberList, setMemberList] = useState<any[]>([]);
   const [showMemberList, setShowMemberList] = useState(false);
-const [showSplash, setShowSplash] = useState(true);
+  const [showSplash, setShowSplash] = useState(true);
 
  // State untuk Reedem poin (POS)
 const [isRedeemingPoints, setIsRedeemingPoints] = useState(false);
