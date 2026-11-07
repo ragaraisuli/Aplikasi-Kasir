@@ -4217,7 +4217,7 @@ onClick={() => handleOpenPayModal(d)}
           <img 
             src={storeProfile.logo_url} 
             alt="Logo Toko" 
-            className="w-16 h-16 object-contain rounded-lg border shadow-sm mb-1" 
+            className="w-28 h-28 object-contain mb-1" 
           />
         )}
         <h3 className="font-bold text-lg text-gray-900 uppercase">
