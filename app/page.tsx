@@ -4281,7 +4281,7 @@ onClick={() => handleOpenPayModal(d)}
           <img 
             src={qrCodeImageUrl} 
             alt="QR Code Feedback" 
-            className="w-20 h-20 object-contain"
+            className="w-35 h-35 object-contain"
           />
           <span className="text-[10px] text-gray-600 mt-1 font-medium">Scan untuk Beri Ulasan / Saran</span>
         </div>
