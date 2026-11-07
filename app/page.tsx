@@ -622,6 +622,7 @@ const handleSaveProfile = async (e: React.FormEvent) => {
         store_name: storeProfile.store_name,
         address: storeProfile.address,
         phone: storeProfile.phone,
+        logo_url: storeProfile.logo_url,
       })
       .eq('id', storeProfile.id);
 
@@ -2721,11 +2722,62 @@ if (showSplash) {
       <div>
         <h2 className="text-xl font-bold text-gray-800">⚙️ Pengaturan Profil Toko</h2>
         <p className="text-xs text-gray-500">
-          Informasi ini akan otomatis tercetak pada struk pembayaran pelanggan.
+          Informasi dan logo ini akan otomatis tercetak pada struk pembayaran pelanggan.
         </p>
       </div>
 
       <form onSubmit={handleSaveProfile} className="space-y-4">
+        
+        {/* Input & Pratinjau Logo Toko */}
+        <div>
+          <label className="block text-xs font-semibold text-gray-700 mb-1">Logo Toko</label>
+          <div className="flex items-center space-x-3">
+            {storeProfile.logo_url && (
+              <img 
+                src={storeProfile.logo_url} 
+                alt="Logo Toko" 
+                className="w-14 h-14 object-cover rounded-xl border shadow-sm" 
+              />
+            )}
+            <label className="flex-1 flex items-center justify-center space-x-2 px-4 py-2.5 border rounded-xl text-sm bg-blue-50 text-blue-700 border-blue-300 font-semibold cursor-pointer hover:bg-blue-100 transition shadow-sm">
+              <span>🖼️ Pilih / Unggah Logo Toko</span>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={async (e) => {
+                  const file = e.target.files?.[0];
+                  if (!file) return;
+                  try {
+                    setLoading(true);
+                    const fileExt = file.name.split('.').pop();
+                    const fileName = `logo-${Date.now()}.${fileExt}`;
+                    
+                    const { error: uploadError } = await supabase.storage
+                      .from('product-images')
+                      .upload(fileName, file);
+
+                    if (uploadError) throw uploadError;
+
+                    const { data: publicUrlData } = supabase.storage
+                      .from('product-images')
+                      .getPublicUrl(fileName);
+
+                    if (publicUrlData?.publicUrl) {
+                      setStoreProfile({ ...storeProfile, logo_url: publicUrlData.publicUrl });
+                      alert('Logo berhasil diunggah! Jangan lupa klik "Simpan Perubahan Profil".');
+                    }
+                  } catch (err: any) {
+                    alert('Gagal mengunggah logo: ' + (err.message || err));
+                  } finally {
+                    setLoading(false);
+                  }
+                }}
+                className="hidden"
+              />
+            </label>
+          </div>
+        </div>
+
         <div>
           <label className="block text-xs font-semibold text-gray-700 mb-1">Nama Toko</label>
           <input
@@ -2764,9 +2816,10 @@ if (showSplash) {
 
         <button
           type="submit"
-          className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-sm shadow transition-colors"
+          disabled={loading}
+          className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-sm shadow transition-colors disabled:bg-gray-300"
         >
-          💾 Simpan Perubahan Profil
+          {loading ? 'Menyimpan...' : '💾 Simpan Perubahan Profil'}
         </button>
       </form>
     </div>
@@ -2835,65 +2888,65 @@ if (showSplash) {
       </div>
     )}
 
-{/* SECTION: Daftar Staf / Kasir Terdaftar */}
-<div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 mt-6 space-y-4">
-  <div className="flex justify-between items-center border-b pb-3">
-    <div>
-      <h3 className="font-bold text-gray-800 text-base">👥 Daftar Staf & Kasir Toko</h3>
-      <p className="text-xs text-gray-500">Kelola akun karyawan yang memiliki akses ke aplikasi POS.</p>
-    </div>
-    <button 
-      onClick={fetchStaffList}
-      className="text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1.5 rounded-lg transition font-semibold"
-    >
-      🔄 Refresh
-    </button>
-  </div>
+    {/* SECTION: Daftar Staf / Kasir Terdaftar */}
+    <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 mt-6 space-y-4">
+      <div className="flex justify-between items-center border-b pb-3">
+        <div>
+          <h3 className="font-bold text-gray-800 text-base">👥 Daftar Staf & Kasir Toko</h3>
+          <p className="text-xs text-gray-500">Kelola akun karyawan yang memiliki akses ke aplikasi POS.</p>
+        </div>
+        <button 
+          onClick={fetchStaffList}
+          className="text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1.5 rounded-lg transition font-semibold"
+        >
+          🔄 Refresh
+        </button>
+      </div>
 
-  {loadingStaff ? (
-    <p className="text-xs text-gray-500 text-center py-4">Memuat data staf...</p>
-  ) : staffList.length === 0 ? (
-    <p className="text-xs text-gray-400 text-center py-4">Belum ada akun staf yang terdaftar.</p>
-  ) : (
-    <div className="overflow-x-auto">
-      <table className="w-full text-left border-collapse text-sm">
-        <thead>
-          <tr className="border-b bg-gray-50 text-xs text-gray-600">
-            <th className="p-3 font-semibold">Nama Lengkap</th>
-            <th className="p-3 font-semibold">Email</th>
-            <th className="p-3 font-semibold">Role / Akses</th>
-            <th className="p-3 font-semibold text-center">Aksi</th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-gray-100">
-          {staffList.map((staff) => (
-            <tr key={staff.id} className="hover:bg-gray-50 transition">
-              <td className="p-3 font-medium text-gray-800">{staff.full_name || '-'}</td>
-              <td className="p-3 text-gray-600">{staff.email}</td>
-              <td className="p-3">
-                <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${
-                  staff.role === 'owner' ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700'
-                }`}>
-                  {staff.role?.toUpperCase()}
-                </span>
-              </td>
-              <td className="p-3 text-center space-x-2">
-                {staff.role !== 'owner' && (
-                  <button
-                    onClick={() => handleDeleteStaff(staff.id)}
-                    className="px-2.5 py-1 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg text-xs font-semibold transition"
-                  >
-                    🗑️ Hapus
-                  </button>
-                )}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      {loadingStaff ? (
+        <p className="text-xs text-gray-500 text-center py-4">Memuat data staf...</p>
+      ) : staffList.length === 0 ? (
+        <p className="text-xs text-gray-400 text-center py-4">Belum ada akun staf yang terdaftar.</p>
+      ) : (
+        <div className="overflow-x-auto">
+          <table className="w-full text-left border-collapse text-sm">
+            <thead>
+              <tr className="border-b bg-gray-50 text-xs text-gray-600">
+                <th className="p-3 font-semibold">Nama Lengkap</th>
+                <th className="p-3 font-semibold">Email</th>
+                <th className="p-3 font-semibold">Role / Akses</th>
+                <th className="p-3 font-semibold text-center">Aksi</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-100">
+              {staffList.map((staff) => (
+                <tr key={staff.id} className="hover:bg-gray-50 transition">
+                  <td className="p-3 font-medium text-gray-800">{staff.full_name || '-'}</td>
+                  <td className="p-3 text-gray-600">{staff.email}</td>
+                  <td className="p-3">
+                    <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${
+                      staff.role === 'owner' ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700'
+                    }`}>
+                      {staff.role?.toUpperCase()}
+                    </span>
+                  </td>
+                  <td className="p-3 text-center space-x-2">
+                    {staff.role !== 'owner' && (
+                      <button
+                        onClick={() => handleDeleteStaff(staff.id)}
+                        className="px-2.5 py-1 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg text-xs font-semibold transition"
+                      >
+                        🗑️ Hapus
+                      </button>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
-  )}
-</div>
 
   </div>
 )}
@@ -4158,8 +4211,15 @@ onClick={() => handleOpenPayModal(d)}
   <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
     <div className="bg-white p-6 rounded-2xl max-w-md w-full shadow-xl space-y-4 font-mono text-sm">
       
-      {/* HEADER TOKO PADA STRUK */}
-      <div className="text-center border-b border-dashed pb-3">
+{/* HEADER TOKO PADA STRUK */}
+      <div className="text-center border-b border-dashed pb-3 flex flex-col items-center justify-center space-y-1.5">
+        {storeProfile.logo_url && (
+          <img 
+            src={storeProfile.logo_url} 
+            alt="Logo Toko" 
+            className="w-16 h-16 object-contain rounded-lg border shadow-sm mb-1" 
+          />
+        )}
         <h3 className="font-bold text-lg text-gray-900 uppercase">
           {storeProfile.store_name || 'POS SaaS Toko'}
         </h3>
