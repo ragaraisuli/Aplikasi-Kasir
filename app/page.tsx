@@ -271,7 +271,7 @@ useEffect(() => {
   
   // State Pembayaran Kasir & Utang
   const [cashPaid, setCashPaid] = useState('')
-  const [paymentMethod, setPaymentMethod] = useState<'Tunai' | 'QRIS' | 'transfer/debit' | 'Utang'>('Tunai')
+  const [paymentMethod, setPaymentMethod] = useState<'Tunai' | 'QRIS' | 'Transfer/Debit' | 'Utang'>('Tunai')
   const [customerName, setCustomerName] = useState('')
   const [customerPhone, setCustomerPhone] = useState('')
   const [appliedPromoCode, setAppliedPromoCode] = useState('')
@@ -2596,7 +2596,7 @@ if (showSplash) {
                           <span className="bg-gray-100 px-2 py-1 rounded text-xs font-semibold">{t.cashier_name || userName}</span>
                         </td>
                         <td className="py-3 px-4">
-                          <span className={`px-2 py-1 rounded text-xs font-bold ${t.payment_method === 'Utang' ? 'bg-red-50 text-red-600' : t.payment_method === 'QRIS' ? 'bg-purple-50 text-purple-600' : t.payment_method === 'transfer/debit' ? 'bg-indigo-50 text-indigo-600' : 'bg-green-50 text-green-600'}`}>
+                          <span className={`px-2 py-1 rounded text-xs font-bold ${t.payment_method === 'Utang' ? 'bg-red-50 text-red-600' : t.payment_method === 'QRIS' ? 'bg-purple-50 text-purple-600' : t.payment_method === 'Transfer/Debit' ? 'bg-indigo-50 text-indigo-600' : 'bg-green-50 text-green-600'}`}>
                             {t.payment_method === 'Utang' ? 'Belum Lunas' : t.payment_method || 'Tunai'}
                           </span>
                         </td>
@@ -3100,7 +3100,7 @@ onClick={() => handleOpenPayModal(d)}
                   <option value="all">Semua Metode Pembayaran</option>
                   <option value="Tunai">Hanya Tunai</option>
                   <option value="QRIS">Hanya QRIS</option>
-                  <option value="transfer/debit">Hanya transfer/debit</option>
+                  <option value="Transfer/Debit">Hanya Transfer/Debit</option>
                   <option value="Utang">Hanya Utang</option>
                 </select>
               </div>
@@ -3597,7 +3597,7 @@ onClick={() => handleOpenPayModal(d)}
               <div>
                 <label className="block text-xs font-semibold text-gray-600 mb-1">Metode Pembayaran</label>
                 <div className="grid grid-cols-4 gap-1.5">
-                  {(['Tunai', 'QRIS', 'transfer/debit', 'Utang'] as const).map((method) => (
+                  {(['Tunai', 'QRIS', 'Transfer/Debit', 'Utang'] as const).map((method) => (
                     <button
                       key={method}
                       type="button"
@@ -3661,7 +3661,7 @@ onClick={() => handleOpenPayModal(d)}
               ) : (
                 <div className="bg-purple-50 p-3 rounded-xl border border-purple-100 text-center">
                   <p className="text-xs font-bold text-purple-700">Pembayaran Non-Tunai ({paymentMethod})</p>
-                  <p className="text-[11px] text-purple-500 mt-0.5">Silakan scan QRIS / verifikasi transfer/debit sejumlah total tagihan.</p>
+                  <p className="text-[11px] text-purple-500 mt-0.5">Silakan scan QRIS / verifikasi Transfer/Debit sejumlah total tagihan.</p>
                 </div>
               )}
 
