@@ -4247,7 +4247,7 @@ onClick={() => handleOpenPayModal(d)}
       </div>
 
       {/* DAFTAR BELANJA */}
-      <div className="border-b border-dashed py-3 space-y-2 max-h-48 overflow-y-auto">
+      <div className="border-b border-dashed py-3 space-y-2">
         <p className="text-xs font-bold text-gray-600 uppercase">Daftar Belanja:</p>
         {transactionItems.length === 0 ? (
           <p className="text-xs text-gray-400 italic">Memuat rincian item...</p>
