@@ -1627,7 +1627,6 @@ const fetchCategories = async () => {
 
 // 2b. Hitung & Filter Profitabilitas Produk (Hanya Terjual > 0 & Pencarian)
 const productProfitabilityList = products.map((p: any) => {
-  // Hitung total unit terjual untuk produk ini dari transaksi yang terfilter
   let soldQty = 0;
   let totalRevenue = 0;
   let totalCOGS = 0;
@@ -1635,10 +1634,13 @@ const productProfitabilityList = products.map((p: any) => {
   filteredTransactions.forEach((t: any) => {
     const items = t.transaction_items || t.items || [];
     items.forEach((item: any) => {
-      if (item.product_id === p.id || item.name === p.name) {
-        const qty = Number(item.qty || item.quantity) || 0;
-        const price = Number(item.price || item.sell_price) || 0;
-        const buyPrice = Number(p.buy_price || item.buy_price) || 0;
+      const matchId = String(item.product_id || item.productId || '') === String(p.id);
+      const matchName = String(item.product_name || item.name || '').trim().toLowerCase() === String(p.name || '').trim().toLowerCase();
+
+      if (matchId || matchName) {
+        const qty = Number(item.qty || item.quantity || item.jumlah || 1);
+        const price = Number(item.price || item.sell_price || p.sell_price || p.price || 0);
+        const buyPrice = Number(p.buy_price || item.buy_price || 0);
 
         soldQty += qty;
         totalRevenue += qty * price;
@@ -1710,13 +1712,13 @@ const filteredProfitabilityList = productProfitabilityList.filter((p: any) => {
     filteredTransactions.forEach((t: any) => {
       const items = t.transaction_items || t.items || [];
       items.forEach((item: any) => {
-        if (
-          item.product_id === p.id || 
-          item.product_name === p.name || 
-          item.name === p.name
-        ) {
-          const q = Number(item.qty || item.quantity) || 0;
-          const pr = Number(item.price) || 0;
+        // Konversi ke string & lowercase agar aman dari perbedaan tipe data (number vs string)
+        const matchId = String(item.product_id || item.productId || '') === String(p.id);
+        const matchName = String(item.product_name || item.name || '').trim().toLowerCase() === String(p.name || '').trim().toLowerCase();
+
+        if (matchId || matchName) {
+          const q = Number(item.qty || item.quantity || item.jumlah || 1);
+          const pr = Number(item.price || item.sell_price || p.sell_price || p.price || 0);
           qtySold += q;
           totalRevenue += (q * pr);
         }
