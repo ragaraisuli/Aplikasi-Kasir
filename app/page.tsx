@@ -406,28 +406,68 @@ const filteredMonthlySummary = productMonthlySalesSummary.filter((p: any) => {
 
 // Fungsi untuk mengunduh laporan ke file CSV (Format standar Excel Indonesia menggunakan titik koma ;)
   const exportToCSV = () => {
-    // 1. Header & Data untuk Valuasi Modal per Produk
-    let csvContent = "=== VALUASI MODAL PER PRODUK ===\n";
-    csvContent += "Nama Produk;Stok Sisa;Harga Beli (Modal);Total Nilai Aset (Rp)\n";
+    let csvContent = `LAPORAN DASHBOARD KASIR\n`;
+    csvContent += `Tanggal Ekspor: ${new Date().toLocaleDateString("id-ID")}\n\n`;
+
+    // ==========================================
+    // 1. VALUASI MODAL PER PRODUK
+    // ==========================================
+    csvContent += "=== VALUASI MODAL PER PRODUK ===\n";
+    csvContent += "Nama Produk;Kategori;Stok Sisa;Harga Beli (Modal);Total Nilai Aset (Rp)\n";
 
     products.forEach((p: any) => {
       const safeName = String(p.name || '').replace(/"/g, '""');
+      const safeCategory = String(p.category || '-').replace(/"/g, '""');
       const stock = Number(p.stock) || 0;
       const buyPrice = Number(p.buy_price) || 0;
       const totalAssetValue = stock * buyPrice;
 
-      csvContent += `"${safeName}";${stock};${buyPrice};${totalAssetValue}\n`;
+      csvContent += `"${safeName}";"${safeCategory}";${stock};${buyPrice};${totalAssetValue}\n`;
     });
 
     csvContent += "\n\n"; // Jarak antar tabel
 
-    // 2. Header & Data untuk Analisis Profitabilitas per Produk
+    // ==========================================
+    // 2. ANALISIS PROFITABILITAS PER PRODUK
+    // ==========================================
     csvContent += "=== ANALISIS PROFITABILITAS PER PRODUK ===\n";
-    csvContent += "Nama Produk;Jumlah Terjual;Total Omzet (Rp);Total Modal HPP (Rp);Laba Kotor (Rp);Margin (%)\n";
+    csvContent += "Kategori;Nama Produk;Jumlah Terjual;Total Omzet (Rp);Total Modal HPP (Rp);Laba Kotor (Rp);Margin (%)\n";
 
-    productSalesSummary.forEach((p: any) => {
-      const safeName = String(p.name || '').replace(/"/g, '""');
-      csvContent += `"${safeName}";${p.qtySold};${p.totalRevenue};${p.totalCOGS};${p.grossProfit};${p.profitMargin}%\n`;
+    const profitData = typeof filteredProfitabilityList !== 'undefined' ? filteredProfitabilityList : productSalesSummary;
+    
+    profitData.forEach((p: any) => {
+      const safeName = String(p.name || p.product_name || '').replace(/"/g, '""');
+      const safeCategory = String(p.category || '-').replace(/"/g, '""');
+      const qtySold = Number(p.qtySold || p.total_sold) || 0;
+      const totalRevenue = Number(p.totalRevenue || p.total_revenue) || 0;
+      const totalCOGS = Number(p.totalCOGS || p.total_cost) || 0;
+      const grossProfit = Number(p.grossProfit || p.gross_profit) || 0;
+      const profitMargin = Number(p.profitMargin || p.margin_percent) || 0;
+
+      csvContent += `"${safeCategory}";"${safeName}";${qtySold};${totalRevenue};${totalCOGS};${grossProfit};${profitMargin}%\n`;
+    });
+
+    csvContent += "\n\n"; // Jarak antar tabel
+
+    // ==========================================
+    // 3. TREN PENJUALAN PRODUK BULANAN
+    // ==========================================
+    csvContent += "=== TREN PENJUALAN PRODUK BULANAN ===\n";
+    csvContent += "Produk;Kategori;Jan;Feb;Mar;Apr;Mei;Jun;Jul;Agt;Sep;Okt;Nov;Des;Total Tahun\n";
+
+    // Menggunakan filteredMonthlySummary sesuai dengan state yang ada di kode Anda
+    const trendData = typeof filteredMonthlySummary !== 'undefined' ? filteredMonthlySummary : [];
+
+    trendData.forEach((item: any) => {
+      const safeName = String(item.name || '').replace(/"/g, '""');
+      const safeCategory = String(item.category || '-').replace(/"/g, '""');
+      const m = item.monthlyQty || {};
+      
+      csvContent += `"${safeName}";"${safeCategory}";` +
+        `${m['01'] || 0};${m['02'] || 0};${m['03'] || 0};${m['04'] || 0};` +
+        `${m['05'] || 0};${m['06'] || 0};${m['07'] || 0};${m['08'] || 0};` +
+        `${m['09'] || 0};${m['10'] || 0};${m['11'] || 0};${m['12'] || 0};` +
+        `${item.totalYearQty || 0}\n`;
     });
 
     // Buat Blob dari data CSV dengan BOM (\ufeff) agar karakter & format terbaca sempurna di Excel
@@ -437,7 +477,7 @@ const filteredMonthlySummary = productMonthlySalesSummary.filter((p: any) => {
     // Buat elemen link virtual untuk memicu download otomatis di browser
     const link = document.createElement("a");
     link.href = url;
-    link.setAttribute("download", `Laporan_Valuasi_dan_Profitabilitas_${startDate || 'semua'}_sd_${endDate || 'semua'}.csv`);
+    link.setAttribute("download", `Laporan_Lengkap_Kasir_${new Date().toISOString().slice(0, 10)}.csv`);
     document.body.appendChild(link);
     link.click();
     
