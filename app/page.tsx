@@ -1713,12 +1713,14 @@ const filteredProfitabilityList = productProfitabilityList.filter((p: any) => {
       const items = t.transaction_items || t.items || [];
       items.forEach((item: any) => {
         // Konversi ke string & lowercase agar aman dari perbedaan tipe data (number vs string)
-        const matchId = String(item.product_id || item.productId || '') === String(p.id);
+        const matchId = String(item.product_id || item.productId || '').trim() === String(p.id).trim();
         const matchName = String(item.product_name || item.name || '').trim().toLowerCase() === String(p.name || '').trim().toLowerCase();
 
         if (matchId || matchName) {
-          const q = Number(item.qty || item.quantity || item.jumlah || 1);
+          // Memprioritaskan item.qty sesuai kolom di database Supabase Anda
+          const q = Number(item.qty) || 0;
           const pr = Number(item.price || item.sell_price || p.sell_price || p.price || 0);
+          
           qtySold += q;
           totalRevenue += (q * pr);
         }
