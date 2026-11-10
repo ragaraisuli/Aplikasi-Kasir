@@ -433,19 +433,20 @@ const filteredMonthlySummary = productMonthlySalesSummary.filter((p: any) => {
     csvContent += "=== ANALISIS PROFITABILITAS PER PRODUK ===\n";
     csvContent += "Kategori;Nama Produk;Jumlah Terjual;Total Omzet (Rp);Total Modal HPP (Rp);Laba Kotor (Rp);Margin (%)\n";
 
-    // Menggunakan data yang sesuai dengan filter aktif atau fallback ke productSalesSummary asli Anda
-    const profitData = typeof filteredProfitabilityList !== 'undefined' ? filteredProfitabilityList : productSalesSummary;
+    // Mencari data profitabilitas dari state yang aktif di layar (prioritas utama)
+    const profitData = 
+      (typeof filteredProfitabilityList !== 'undefined' && filteredProfitabilityList.length > 0) ? filteredProfitabilityList :
+      (typeof productSalesSummary !== 'undefined' && productSalesSummary.length > 0) ? productSalesSummary : [];
 
     profitData.forEach((p: any) => {
       const safeName = String(p.name || p.product_name || '').replace(/"/g, '""');
       const safeCategory = String(p.category || '-').replace(/"/g, '""');
       
-      // Mengambil nilai asli dari objek p sesuai struktur kode Anda
-      const qtySold = Number(p.qtySold) || 0;
-      const totalRevenue = Number(p.totalRevenue) || 0;
-      const totalCOGS = Number(p.totalCOGS) || 0;
-      const grossProfit = Number(p.grossProfit) || 0;
-      const profitMargin = Number(p.profitMargin) || 0;
+      const qtySold = Number(p.qtySold ?? p.total_sold ?? 0);
+      const totalRevenue = Number(p.totalRevenue ?? p.total_revenue ?? 0);
+      const totalCOGS = Number(p.totalCOGS ?? p.total_cost ?? 0);
+      const grossProfit = Number(p.grossProfit ?? p.gross_profit ?? 0);
+      const profitMargin = Number(p.profitMargin ?? p.margin_percent ?? 0);
 
       csvContent += `"${safeCategory}";"${safeName}";${qtySold};${totalRevenue};${totalCOGS};${grossProfit};${profitMargin}%\n`;
     });
