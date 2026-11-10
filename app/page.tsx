@@ -410,7 +410,7 @@ const filteredMonthlySummary = productMonthlySalesSummary.filter((p: any) => {
     csvContent += `Tanggal Ekspor: ${new Date().toLocaleDateString("id-ID")}\n\n`;
 
     // ==========================================
-    // 1. VALUASI MODAL PER PRODUK
+    // 1. Header & Data untuk Valuasi Modal per Produk
     // ==========================================
     csvContent += "=== VALUASI MODAL PER PRODUK ===\n";
     csvContent += "Nama Produk;Kategori;Stok Sisa;Harga Beli (Modal);Total Nilai Aset (Rp)\n";
@@ -428,21 +428,24 @@ const filteredMonthlySummary = productMonthlySalesSummary.filter((p: any) => {
     csvContent += "\n\n"; // Jarak antar tabel
 
     // ==========================================
-    // 2. ANALISIS PROFITABILITAS PER PRODUK
+    // 2. Header & Data untuk Analisis Profitabilitas per Produk
     // ==========================================
     csvContent += "=== ANALISIS PROFITABILITAS PER PRODUK ===\n";
     csvContent += "Kategori;Nama Produk;Jumlah Terjual;Total Omzet (Rp);Total Modal HPP (Rp);Laba Kotor (Rp);Margin (%)\n";
 
+    // Menggunakan data yang sesuai dengan filter aktif atau fallback ke productSalesSummary asli Anda
     const profitData = typeof filteredProfitabilityList !== 'undefined' ? filteredProfitabilityList : productSalesSummary;
-    
+
     profitData.forEach((p: any) => {
       const safeName = String(p.name || p.product_name || '').replace(/"/g, '""');
       const safeCategory = String(p.category || '-').replace(/"/g, '""');
-      const qtySold = Number(p.qtySold || p.total_sold) || 0;
-      const totalRevenue = Number(p.totalRevenue || p.total_revenue) || 0;
-      const totalCOGS = Number(p.totalCOGS || p.total_cost) || 0;
-      const grossProfit = Number(p.grossProfit || p.gross_profit) || 0;
-      const profitMargin = Number(p.profitMargin || p.margin_percent) || 0;
+      
+      // Mengambil nilai asli dari objek p sesuai struktur kode Anda
+      const qtySold = Number(p.qtySold) || 0;
+      const totalRevenue = Number(p.totalRevenue) || 0;
+      const totalCOGS = Number(p.totalCOGS) || 0;
+      const grossProfit = Number(p.grossProfit) || 0;
+      const profitMargin = Number(p.profitMargin) || 0;
 
       csvContent += `"${safeCategory}";"${safeName}";${qtySold};${totalRevenue};${totalCOGS};${grossProfit};${profitMargin}%\n`;
     });
@@ -455,7 +458,6 @@ const filteredMonthlySummary = productMonthlySalesSummary.filter((p: any) => {
     csvContent += "=== TREN PENJUALAN PRODUK BULANAN ===\n";
     csvContent += "Produk;Kategori;Jan;Feb;Mar;Apr;Mei;Jun;Jul;Agt;Sep;Okt;Nov;Des;Total Tahun\n";
 
-    // Menggunakan filteredMonthlySummary sesuai dengan state yang ada di kode Anda
     const trendData = typeof filteredMonthlySummary !== 'undefined' ? filteredMonthlySummary : [];
 
     trendData.forEach((item: any) => {
