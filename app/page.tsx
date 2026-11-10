@@ -2883,7 +2883,7 @@ if (showSplash) {
         <form onSubmit={handleRegisterStaff} className="space-y-4 pt-2 border-t">
           <div>
             <label className="block text-xs font-semibold text-gray-700 mb-1">
-              Nama Lengkap Kasir / Staf
+              Nama Kasir / Staf
             </label>
             <input
               type="text"
@@ -2904,7 +2904,7 @@ if (showSplash) {
               required
               value={staffEmail}
               onChange={(e) => setStaffEmail(e.target.value)}
-              placeholder="kasir.budi@toko.com"
+              placeholder=" "
               className="w-full border border-gray-300 rounded-xl p-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-500 text-gray-800"
             />
           </div>
@@ -3150,32 +3150,6 @@ onClick={() => handleOpenPayModal(d)}
                   <option value="Utang">Hanya Utang</option>
                 </select>
               </div>
-
-<div className="bg-blue-50 p-3 rounded-xl border border-blue-100 space-y-2">
-  <label className="block text-xs font-semibold text-blue-800">👤 Identitas Pelanggan / Member (Opsional)</label>
-  <div className="flex gap-2">
-    <input
-      type="text"
-      placeholder="Cari No HP / Nama Member..."
-      value={memberSearchTerm}
-      onChange={(e) => handleSearchMember(e.target.value)}
-      className="w-full px-3 py-1.5 border rounded-lg text-xs bg-white text-gray-800 focus:ring-2 focus:ring-blue-500"
-    />
-  </div>
-  {/* Jika member ditemukan */}
-  {activeMember && (
-    <div className="text-xs text-emerald-700 font-semibold flex justify-between items-center bg-white p-2 rounded border border-emerald-200">
-      <span>✔ {activeMember.name} ({activeMember.points} Poin)</span>
-      <button 
-        onClick={() => setActiveMember(null)}
-        className="text-red-500 hover:underline text-[10px]"
-      >
-        Lepas
-      </button>
-    </div>
-  )}
-</div>
-
               <div>
                 <label className="block text-xs font-semibold text-gray-600 mb-1">Kode Promo (Opsional)</label>
                 <input
