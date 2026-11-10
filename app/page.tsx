@@ -1311,7 +1311,7 @@ if (activeMember) {
           discount_type: newDiscountType,
           discount_value: parseFloat(newDiscountValue),
           target_type: newTargetType,
-          product_ids: newTargetType === 'specific' ? newPromoProductIds : null,
+          product_id: newTargetType === 'specific' && newPromoProductIds?.length > 0 ? newPromoProductIds[0] : null,
           payment_method: newPromoPaymentMethod,
           promo_code: newPromoCode.trim() || null,
           is_active: true,
