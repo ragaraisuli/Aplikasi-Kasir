@@ -4284,10 +4284,25 @@ onClick={() => handleOpenPayModal(d)}
         )}
       </div>
 
-      {/* TOTAL PEMBAYARAN */}
-      <div className="flex justify-between font-bold text-base sm:text-lg text-gray-900 pt-1">
-        <span>Total Pembayaran:</span>
-        <span className="text-blue-600">Rp {(selectedTransaction.total_amount || 0).toLocaleString('id-ID')}</span>
+{/* TOTAL PEMBAYARAN & DISKON */}
+      <div className="border-t border-dashed pt-2 space-y-1 text-xs sm:text-sm text-gray-700">
+        <div className="flex justify-between">
+          <span>Subtotal:</span>
+          <span>Rp {(((selectedTransaction as any).total_amount || 0) + ((selectedTransaction as any).discount_amount || 0)).toLocaleString('id-ID')}</span>
+        </div>
+
+        {/* Hanya tampilkan baris diskon jika ada nominal diskon > 0 */}
+        {((selectedTransaction as any).discount_amount || 0) > 0 && (
+          <div className="flex justify-between text-red-600 font-medium">
+            <span>Diskon / Promo:</span>
+            <span>- Rp {Number((selectedTransaction as any).discount_amount).toLocaleString('id-ID')}</span>
+          </div>
+        )}
+
+        <div className="flex justify-between font-bold text-base sm:text-lg text-gray-900 pt-1 border-t border-gray-200">
+          <span>Total Pembayaran:</span>
+          <span className="text-blue-600">Rp {((selectedTransaction as any).total_amount || 0).toLocaleString('id-ID')}</span>
+        </div>
       </div>
 
       {/* FOOTER / UCAPAN TERIMA KASIH */}
