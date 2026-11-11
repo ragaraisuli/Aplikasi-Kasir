@@ -1252,14 +1252,15 @@ if (activeMember) {
           if (debtError) throw debtError;
         }
 
-        const createdTransaction: Transaction = {
-      id: data.transaction_id,
-      created_at: new Date().toISOString(),
-      total_amount: data.total_amount,
-      discount_amount: data.discount_amount, // <-- TAMBAHKAN BARIS INI
-      cashier_name: userName || cashierName,
-      payment_method: paymentMethod,
-    } as any; // Tambahkan as any jika TypeScript protes soal tipe data
+const createdTransaction: Transaction = {
+  id: data.transaction_id,
+  created_at: new Date().toISOString(),
+  subtotal: data.subtotal,
+  discount_amount: data.discount_amount,
+  total_amount: data.total_amount,
+  cashier_name: userName || cashierName,
+  payment_method: paymentMethod,
+} as any;
 
         // Reset state aplikasi setelah sukses (Termasuk state member & diskon poin)
         setCart([])
