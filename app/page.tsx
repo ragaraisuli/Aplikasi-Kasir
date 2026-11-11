@@ -519,15 +519,14 @@ const [storeProfile, setStoreProfile] = useState<any>({
 
 // Ambil data profil toko dari tabel stores
 const fetchStoreProfile = async () => {
+  const storeId = currentStoreId;
+  if (!storeId) return;
   const { data, error } = await supabase
     .from('stores')
     .select('*')
-    .limit(1)
+    .eq('id', storeId)
     .single();
-
-  if (data && !error) {
-    setStoreProfile(data);
-  }
+  if (data && !error) setStoreProfile(data);
 };
 
 const handleTabChange = (tab: string) => {
@@ -651,18 +650,19 @@ const handleDeleteStaff = async (staffId: string) => {
 };
 
 useEffect(() => {
-  fetchStoreProfile();
-}, []);
-
-const handleHashChange = () => {
-      const hash = window.location.hash.replace('#', '');
-      if (hash) {
-        setActiveTab(hash);
-      }
-    // Jalankan saat pertama kali muat & dengarkan perubahan hash
-    window.addEventListener('hashchange', handleHashChange);
-    return () => window.removeEventListener('hashchange', handleHashChange);
+  const handleHashChange = () => {
+    const hash = window.location.hash.replace('#', '');
+    if (hash) {
+      setActiveTab(hash);
     }
+  };
+
+  // Jalankan saat pertama kali muat & dengarkan perubahan hash
+  window.addEventListener('hashchange', handleHashChange);
+  handleHashChange();
+
+  return () => window.removeEventListener('hashchange', handleHashChange);
+}, []);
 
 const handleSaveProfile = async (e: React.FormEvent) => {
   e.preventDefault();
