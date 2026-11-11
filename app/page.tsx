@@ -1187,6 +1187,11 @@ const handleCheckout = async () => {
         qty: item.quantity
       }))
 
+// DEBUG: Cek nilai member dan poin yang akan dikirim ke backend
+    console.log("Data Member Checkout:", activeMember);
+    console.log("Poin yang Ditukar:", pointsToRedeem);
+    console.log("Status Redeem:", isRedeemingPoints);
+
       // 2. Panggil fungsi Supabase RPC (Server-Side Execution)
       // Perhitungan harga, diskon, dan stok divalidasi langsung di database PostgreSQL
       const { data, error } = await supabase.rpc('process_checkout', {
@@ -1200,7 +1205,8 @@ const handleCheckout = async () => {
         p_points_to_use: isRedeemingPoints ? Number(pointsToRedeem) || 0 : 0
       })
 
-console.log("Respons Supabase RPC:", data);
+      console.log("Respons Supabase RPC setelah checkout:", data);
+      console.log("Respons Supabase RPC:", data);
 
       if (error) throw error
 
