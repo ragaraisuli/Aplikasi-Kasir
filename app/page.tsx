@@ -1268,6 +1268,12 @@ const createdTransaction: Transaction = {
   total_amount: data.total_amount,
   cashier_name: userName || cashierName,
   payment_method: paymentMethod,
+  // --- TAMBAHAN INFORMASI MEMBER UNTUK STRUK ---
+  memberName: activeMember ? activeMember.name : null,
+  memberPhone: activeMember ? activeMember.phone : null,
+  redeemedPoints: isRedeemingPoints ? (parseInt(pointsToRedeem, 10) || 0) : 0,
+  earnedPoints: activeMember ? Math.floor((data.total_amount || calculation.totalAmount) / 10000) * 1 : 0, // sesuaikan min_purchase & point_earned toko Anda
+  remainingPoints: activeMember ? ((activeMember.points || 0) - (isRedeemingPoints ? (parseInt(pointsToRedeem, 10) || 0) : 0) + (Math.floor((data.total_amount || calculation.totalAmount) / 10000) * 1)) : 0
 } as any;
 
         // Reset state aplikasi setelah sukses (Termasuk state member & diskon poin)
@@ -4273,6 +4279,15 @@ onClick={() => handleOpenPayModal(d)}
             {selectedTransaction.payment_method === 'Utang' ? 'Belum Lunas' : selectedTransaction.payment_method || 'Tunai'}
           </span>
         </p>
+        {/* --- TAMBAHAN KHUSUS JIKA TRANSAKSI DENGAN MEMBER --- */}
+        {(selectedTransaction as any).memberName && (
+          <div className="mt-2 pt-2 border-t border-dashed border-blue-200 bg-blue-50/50 p-2 rounded-lg">
+            <p className="font-bold text-blue-800">👤 Member: {(selectedTransaction as any).memberName}</p>
+            {(selectedTransaction as any).memberPhone && (
+              <p className="text-[11px] text-gray-600">No. HP: {(selectedTransaction as any).memberPhone}</p>
+            )}
+          </div>
+        )}
       </div>
 
       {/* DAFTAR BELANJA */}
@@ -4313,6 +4328,30 @@ onClick={() => handleOpenPayModal(d)}
           <span className="text-blue-600">Rp {((selectedTransaction as any).total_amount || 0).toLocaleString('id-ID')}</span>
         </div>
       </div>
+
+{/* --- INFORMASI POIN REWARD MEMBER --- */}
+      {(selectedTransaction as any).memberName && (
+        <div className="border-t border-dashed pt-2 space-y-1 text-xs bg-gray-50 p-2.5 rounded-lg border">
+          <p className="font-bold text-gray-800 uppercase text-center mb-1">⭐ Informasi Poin Member ⭐</p>
+          
+          {((selectedTransaction as any).redeemedPoints || 0) > 0 && (
+            <div className="flex justify-between text-amber-700">
+              <span>Poin Ditukar:</span>
+              <span>- {(selectedTransaction as any).redeemedPoints} Poin</span>
+            </div>
+          )}
+          
+          <div className="flex justify-between text-green-700">
+            <span>Poin Didapat:</span>
+            <span>+ {(selectedTransaction as any).earnedPoints || 0} Poin</span>
+          </div>
+
+          <div className="flex justify-between font-bold text-gray-900 pt-1 border-t border-gray-200">
+            <span>Total Saldo Poin Anda:</span>
+            <span className="text-blue-600">{(selectedTransaction as any).remainingPoints || 0} Poin</span>
+          </div>
+        </div>
+      )}
 
       {/* FOOTER / UCAPAN TERIMA KASIH */}
       <div className="text-center pt-3 border-t border-dashed text-xs text-gray-600 space-y-1">
