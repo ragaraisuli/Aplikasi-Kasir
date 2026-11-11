@@ -608,13 +608,15 @@ const [staffList, setStaffList] = useState<any[]>([]);
 const [loadingStaff, setLoadingStaff] = useState(false);
 
 const fetchStaffList = async () => {
-  if (!currentStoreId) return;
+  // Gunakan fallback ke storeProfile.id jika currentStoreId belum termuat
+  const storeIdToUse = currentStoreId || storeProfile.id;
+  if (!storeIdToUse) return;
+
   setLoadingStaff(true);
-  
   const { data, error } = await supabase
     .from('profiles')
     .select('*')
-    .eq('store_id', currentStoreId); // Memastikan hanya kasir di toko aktif yang muncul
+    .eq('store_id', storeIdToUse);
 
   if (!error && data) {
     setStaffList(data);
@@ -626,10 +628,10 @@ const fetchStaffList = async () => {
 
 // Panggil fetchStaffList saat halaman profil dibuka atau currentStoreId tersedia
 useEffect(() => {
-  if (currentStoreId) {
+  if (currentStoreId || storeProfile.id) {
     fetchStaffList();
   }
-}, [currentStoreId]);
+}, [currentStoreId, storeProfile.id]);
 
 const handleDeleteStaff = async (staffId: string) => {
   if (!confirm('Yakin ingin menghapus akun staf/kasir ini?')) return;
