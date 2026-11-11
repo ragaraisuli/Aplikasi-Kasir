@@ -1202,7 +1202,7 @@ const handleCheckout = async () => {
         p_promo_code: appliedPromoCode || null,
         p_cash_paid: numericCashPaid,
         p_member_id: activeMember?.id || null,
-        p_points_to_use: Number(pointsToRedeem) || 0
+        p_points_to_use: isRedeemingPoints ? (parseInt(pointsToRedeem, 10) || 0) : 0
       })
 
       console.log("Respons Supabase RPC setelah checkout:", data);
@@ -3553,21 +3553,17 @@ onClick={() => handleOpenPayModal(d)}
     if (isNaN(pts) || pts <= 0) return alert('Masukkan jumlah poin yang valid!');
     if (pts > activeMember.points) return alert('Poin member tidak mencukupi!');
 
-    // Ambil langsung nilai terbaru dari database untuk memastikan tidak meleset
     const { data } = await supabase
       .from('store_point_settings')
       .select('point_value_rupiah')
-      .eq('store_id', currentStoreId) // Sesuaikan dengan variabel storeId Anda
+      .eq('store_id', currentStoreId)
       .single();
 
-    const actualRate = data ? Number(data.point_value_rupiah) : 1;
-    
-    // Hitung diskon: 5 poin * 1 = Rp 5
+    const actualRate = data ? Number(data.point_value_rupiah) : 100;
     const discountVal = pts * actualRate;
     
     setRedeemedDiscountAmount(discountVal);
-    setIsRedeemingPoints(false);
-    setPointsToRedeem('');
+    setIsRedeemingPoints(true); // <-- Pastikan ini true agar terbaca sistem
   }}
   className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded font-bold text-[11px]"
 >
