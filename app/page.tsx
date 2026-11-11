@@ -604,13 +604,16 @@ const [loadingStaff, setLoadingStaff] = useState(false);
 const fetchStaffList = async () => {
   if (!currentStoreId) return;
   setLoadingStaff(true);
+  
   const { data, error } = await supabase
     .from('profiles')
     .select('*')
-    .eq('store_id', currentStoreId);
+    .eq('store_id', currentStoreId); // Memastikan hanya kasir di toko aktif yang muncul
 
   if (!error && data) {
     setStaffList(data);
+  } else {
+    console.error('Gagal memuat staf:', error?.message);
   }
   setLoadingStaff(false);
 };
