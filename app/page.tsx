@@ -563,34 +563,40 @@ const handleRegisterStaff = async (e: React.FormEvent) => {
         data: {
           full_name: staffName,
           role: 'kasir',
-          store_id: storeProfile.id || null,
+          store_id: currentStoreId || storeProfile.id || null,
         },
       },
     });
 
     if (authError) throw authError;
 
-    // 2. Simpan/Sync data profil ke tabel 'profiles'
+    // 2. Simpan data profil ke tabel 'profiles' menggunakan .insert() agar aman tidak menimpa data lain
     if (authData.user) {
       const { error: profileError } = await supabase
         .from('profiles')
-        .upsert([
+        .insert([
           {
             id: authData.user.id,
             email: staffEmail,
             full_name: staffName,
             role: 'kasir',
-            store_id: storeProfile.id || null,
+            store_id: currentStoreId || storeProfile.id || null,
           },
         ]);
 
-      if (profileError) console.error('Gagal simpan profil:', profileError.message);
+      if (profileError) {
+        console.error('Gagal simpan profil:', profileError.message);
+        throw new Error('Gagal menyimpan profil kasir: ' + profileError.message);
+      }
     }
 
     alert(`Berhasil mendaftarkan akun kasir baru untuk "${staffName}"!\nEmail: ${staffEmail}`);
     setStaffName('');
     setStaffEmail('');
     setStaffPassword('');
+    
+    // 3. Muat ulang daftar staf agar langsung tampil di tabel
+    fetchStaffList();
   } catch (err: any) {
     alert('Gagal menambah akun kasir: ' + (err.message || err));
   } finally {
