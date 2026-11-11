@@ -1202,7 +1202,7 @@ const handleCheckout = async () => {
         p_promo_code: appliedPromoCode || null,
         p_cash_paid: numericCashPaid,
         p_member_id: activeMember?.id || null,
-        p_points_to_use: isRedeemingPoints ? Number(pointsToRedeem) || 0 : 0
+        p_points_to_use: Number(pointsToRedeem) || 0
       })
 
       console.log("Respons Supabase RPC setelah checkout:", data);
