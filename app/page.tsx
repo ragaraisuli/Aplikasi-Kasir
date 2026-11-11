@@ -1170,6 +1170,7 @@ const calculateCartWithPromo = () => {
 
 const handleCheckout = async () => {
     if (cart.length === 0) return alert('Keranjang masih kosong!')
+      console.log("Kode promo yang dikirim:", appliedPromoCode);
     if (paymentMethod === 'Tunai' && numericCashPaid < calculation.totalAmount) {
       return alert('Uang tunai dari customer kurang!')
     }
@@ -1196,6 +1197,8 @@ const handleCheckout = async () => {
         p_promo_code: appliedPromoCode || null,
         p_cash_paid: numericCashPaid
       })
+
+console.log("Respons Supabase RPC:", data);
 
       if (error) throw error
 
