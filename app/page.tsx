@@ -1804,7 +1804,7 @@ if (showSplash) {
             <button
               onClick={() => handleTabChange('dashboard')}
               className={`px-4 py-1.5 rounded-md text-sm font-medium transition ${
-                activeTab === 'dashboard' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-600 hover:text-gray-900'
+                activeTab === 'dashboard' ? 'bg-blue-600 text-white shadow-sm': 'text-gray-600 hover:bg-gray-100'
               }`}
             >
               Dashboard
@@ -1813,7 +1813,7 @@ if (showSplash) {
             <button
               onClick={() => handleTabChange('reports')}
               className={`px-4 py-1.5 rounded-md text-sm font-medium transition ${
-                activeTab === 'reports' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-600 hover:text-gray-900'
+                activeTab === 'reports' ? 'bg-blue-600 text-white shadow-sm': 'text-gray-600 hover:bg-gray-100'
               }`}
             >
               Laporan & Riwayat
@@ -1821,7 +1821,8 @@ if (showSplash) {
             <button
               onClick={() => handleTabChange('debts')}
               className={`px-4 py-1.5 rounded-md text-sm font-medium transition ${
-                activeTab === 'debts' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-600 hover:text-gray-900'
+                activeTab === 'debts' ? 'bg-blue-600 text-white shadow-sm'
+        : 'text-gray-600 hover:bg-gray-100'
               }`}
             >
               Utang Piutang
@@ -1829,7 +1830,7 @@ if (showSplash) {
 <button
   onClick={() => handleTabChange('membership')}
   className={`px-4 py-1.5 rounded-md text-sm font-medium transition ${
-    activeTab === 'membership' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-600'
+    activeTab === 'membership' ? 'bg-blue-600 text-white shadow-sm' : 'text-gray-600 hover:bg-gray-100'
   }`}
 >
   Membership
@@ -1838,7 +1839,7 @@ if (showSplash) {
             <button
               onClick={() => handleTabChange('promos')}
               className={`px-4 py-1.5 rounded-md text-sm font-medium transition ${
-                activeTab === 'promos' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-600 hover:text-gray-900'
+                activeTab === 'promos' ? 'bg-blue-600 text-white shadow-sm' : 'text-gray-600 hover:bg-gray-100'
               }`}
             >
               Diskon & Promo
@@ -1848,7 +1849,7 @@ if (showSplash) {
             <button
               onClick={() => handleTabChange('pos')}
               className={`px-4 py-1.5 rounded-md text-sm font-medium transition ${
-                activeTab === 'pos' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-600 hover:text-gray-900'
+                activeTab === 'pos' ? 'bg-blue-600 text-white shadow-sm' : 'text-gray-600 hover:bg-gray-100'
               }`}
             >
               Kasir (POS)
