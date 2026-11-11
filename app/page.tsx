@@ -1857,7 +1857,7 @@ if (showSplash) {
             <button
               onClick={() => handleTabChange('products')}
               className={`px-4 py-1.5 rounded-md text-sm font-medium transition ${
-                activeTab === 'products' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-600 hover:text-gray-900'
+                activeTab === 'products' ? 'bg-blue-600 text-white shadow-sm': 'text-gray-600 hover:bg-gray-100'
               }`}
             >
               Kelola Produk
@@ -1880,7 +1880,7 @@ if (showSplash) {
     <button
       onClick={() => handleTabChange('profile')}
       className={`px-4 py-1.5 rounded-md text-sm font-medium transition ${
-        activeTab === 'profile' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-600'
+        activeTab === 'profile' ? 'bg-blue-600 text-white shadow-sm' : 'text-gray-600 hover:bg-gray-100'
       }`}
     >
       ⚙️ Profil Toko
