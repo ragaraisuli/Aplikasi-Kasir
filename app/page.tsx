@@ -214,6 +214,7 @@ if (profile) {
   // Ambil profil user yang sedang login (role & store_id)
 useEffect(() => {
     if (currentStoreId) {
+      fetchStoreProfile();
       fetchCategories();
       fetchAllTransactionItems();
       fetchFeedbacks();
@@ -521,17 +522,24 @@ const [storeProfile, setStoreProfile] = useState<any>({
 const fetchStoreProfile = async () => {
   const storeId = currentStoreId;
   console.log("1. Current Store ID:", storeId);
-  if (!storeId) return;
-  console.log("Store ID kosong, fetch dibatalkan.");
+  
+  if (!storeId) {
+    console.log("Store ID kosong, fetch dibatalkan.");
+    return;
+  }
+
   const { data, error } = await supabase
     .from('stores')
     .select('*')
     .eq('id', storeId)
     .single();
 
-    console.log("2. Data Toko dari Supabase:", data);
-    console.log("3. Error dari Supabase (jika ada):", error);
-  if (data && !error) setStoreProfile(data);
+  console.log("2. Data Toko dari Supabase:", data);
+  console.log("3. Error dari Supabase (jika ada):", error);
+  
+  if (data && !error) {
+    setStoreProfile(data);
+  }
 };
 
 const handleTabChange = (tab: string) => {
@@ -1469,12 +1477,6 @@ const fetchCategories = async () => {
     .select('*')
     .eq('store_id', activeStore)
     .order('id', { ascending: true });
-
-  if (error) {
-    console.error('Gagal memuat kategori:', error.message);
-  } else if (data) {
-    setCategories(data);
-  }
 
     if (error) {
       console.error('Gagal memuat kategori:', error.message)
