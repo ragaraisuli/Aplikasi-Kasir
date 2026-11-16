@@ -520,12 +520,17 @@ const [storeProfile, setStoreProfile] = useState<any>({
 // Ambil data profil toko dari tabel stores
 const fetchStoreProfile = async () => {
   const storeId = currentStoreId;
+  console.log("1. Current Store ID:", storeId);
   if (!storeId) return;
+  console.log("Store ID kosong, fetch dibatalkan.");
   const { data, error } = await supabase
     .from('stores')
     .select('*')
     .eq('id', storeId)
     .single();
+
+    console.log("2. Data Toko dari Supabase:", data);
+    console.log("3. Error dari Supabase (jika ada):", error);
   if (data && !error) setStoreProfile(data);
 };
 
