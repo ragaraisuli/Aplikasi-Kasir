@@ -1868,7 +1868,7 @@ if (showSplash) {
   <>
     <button
       onClick={() => handleTabChange('voc')}
-      className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition ${
+      className={`px-4 py-1.5 text-xs font-semibold rounded-lg transition ${
         activeTab === 'voc' 
           ? 'bg-blue-600 text-white shadow-sm' 
           : 'text-gray-600 hover:bg-gray-100'
