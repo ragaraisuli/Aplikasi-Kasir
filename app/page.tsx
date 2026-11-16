@@ -521,10 +521,8 @@ const [storeProfile, setStoreProfile] = useState<any>({
 // Ambil data profil toko dari tabel stores
 const fetchStoreProfile = async () => {
   const storeId = currentStoreId;
-  console.log("1. Current Store ID:", storeId);
-  
+
   if (!storeId) {
-    console.log("Store ID kosong, fetch dibatalkan.");
     return;
   }
 
@@ -533,9 +531,6 @@ const fetchStoreProfile = async () => {
     .select('*')
     .eq('id', storeId)
     .single();
-
-  console.log("2. Data Toko dari Supabase:", data);
-  console.log("3. Error dari Supabase (jika ada):", error);
   
   if (data && !error) {
     setStoreProfile(data);
@@ -1194,7 +1189,6 @@ const calculateCartWithPromo = () => {
 
 const handleCheckout = async () => {
     if (cart.length === 0) return alert('Keranjang masih kosong!')
-      console.log("Kode promo yang dikirim:", appliedPromoCode);
     if (paymentMethod === 'Tunai' && numericCashPaid < calculation.totalAmount) {
       return alert('Uang tunai dari customer kurang!')
     }
@@ -1211,11 +1205,6 @@ const handleCheckout = async () => {
         qty: item.quantity
       }))
 
-// DEBUG: Cek nilai member dan poin yang akan dikirim ke backend
-    console.log("Data Member Checkout:", activeMember);
-    console.log("Poin yang Ditukar:", pointsToRedeem);
-    console.log("Status Redeem:", isRedeemingPoints);
-
       // 2. Panggil fungsi Supabase RPC (Server-Side Execution)
       // Perhitungan harga, diskon, dan stok divalidasi langsung di database PostgreSQL
       const { data, error } = await supabase.rpc('process_checkout', {
@@ -1228,9 +1217,6 @@ const handleCheckout = async () => {
         p_member_id: activeMember?.id || null,
         p_points_to_use: isRedeemingPoints ? (parseInt(pointsToRedeem, 10) || 0) : 0
       })
-
-      console.log("Respons Supabase RPC setelah checkout:", data);
-      console.log("Respons Supabase RPC:", data);
 
       if (error) throw error
 
@@ -1468,7 +1454,6 @@ const fetchCategories = async () => {
   const activeStore = currentStoreId;
   
   if (!activeStore) {
-    console.log("Store ID belum tersedia, batal memuat kategori.");
     return;
   }
 
