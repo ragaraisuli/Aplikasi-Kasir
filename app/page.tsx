@@ -81,7 +81,7 @@ export default function KasirPage() {
     const hash = window.location.hash.replace('#', '');
     if (hash) return hash;
   }
-  return 'dashboard'; // Default jika tidak ada hash di URL
+  return 'Beranda'; // Default jika tidak ada hash di URL
 });
   const [products, setProducts] = useState<Product[]>([])
   const [transactions, setTransactions] = useState<Transaction[]>([])
@@ -406,7 +406,7 @@ const filteredMonthlySummary = productMonthlySalesSummary.filter((p: any) => {
 
 // Fungsi untuk mengunduh laporan ke file CSV (Format standar Excel Indonesia menggunakan titik koma ;)
   const exportToCSV = () => {
-    let csvContent = `LAPORAN DASHBOARD KASIR\n`;
+    let csvContent = `LAPORAN Beranda KASIR\n`;
     csvContent += `Tanggal Ekspor: ${new Date().toLocaleDateString("id-ID")}\n\n`;
 
     // ==========================================
@@ -1799,15 +1799,15 @@ if (showSplash) {
   {storeProfile.store_name || 'POS SaaS Toko'}
 </h1>
           <div className="flex bg-gray-100 p-1 rounded-lg">
-            {/* Tombol Dashboard HANYA TAMPIL UNTUK OWNER */}
+            {/* Tombol Beranda HANYA TAMPIL UNTUK OWNER */}
   {userRole === 'owner' && (
             <button
-              onClick={() => handleTabChange('dashboard')}
+              onClick={() => handleTabChange('Beranda')}
               className={`px-4 py-1.5 rounded-md text-sm font-medium transition ${
-                activeTab === 'dashboard' ? 'bg-blue-600 text-white shadow-sm': 'text-gray-600 hover:bg-gray-100'
+                activeTab === 'Beranda' ? 'bg-blue-600 text-white shadow-sm': 'text-gray-600 hover:bg-gray-100'
               }`}
             >
-              Dashboard
+              Beranda
             </button>
             )}
             <button
@@ -1828,9 +1828,9 @@ if (showSplash) {
               Utang Piutang
             </button>
 <button
-  onClick={() => handleTabChange('membership')}
+  onClick={() => handleTabChange('Membership')}
   className={`px-4 py-1.5 rounded-md text-sm font-medium transition ${
-    activeTab === 'membership' ? 'bg-blue-600 text-white shadow-sm' : 'text-gray-600 hover:bg-gray-100'
+    activeTab === 'Membership' ? 'bg-blue-600 text-white shadow-sm' : 'text-gray-600 hover:bg-gray-100'
   }`}
 >
   Membership
@@ -1874,7 +1874,7 @@ if (showSplash) {
           : 'text-gray-600 hover:bg-gray-100'
       }`}
     >
-      💬 Voice of Customer
+      💬 Suara Pelanggan
     </button>
 
     <button
@@ -1904,7 +1904,7 @@ if (showSplash) {
       </header>
 
 
-{activeTab === 'dashboard' && userRole === 'owner' && (
+{activeTab === 'Beranda' && userRole === 'owner' && (
         <div className="flex-1 p-8 max-w-6xl mx-auto w-full overflow-y-auto space-y-6">
 
 {/* Header & Filter Tanggal */}
@@ -2696,7 +2696,7 @@ if (showSplash) {
         </div>
       )}
 
-{activeTab === 'membership' && (
+{activeTab === 'Membership' && (
   <MembershipPage storeId={currentStoreId} userRole={userRole} />
 )}
 
@@ -2706,7 +2706,7 @@ if (showSplash) {
           <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col md:flex-row justify-between items-center gap-6">
             <div className="space-y-2">
               <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
-                💬 Voice of Customer (Kritik & Saran)
+                💬 Suara Pelanggan (Kritik & Saran)
               </h2>
               <p className="text-sm text-gray-500">
                 Pantau ulasan, tingkat kepuasan, dan saran langsung dari pelanggan toko Anda.
