@@ -1457,14 +1457,24 @@ const createdTransaction: Transaction = {
   }
 
 const fetchCategories = async () => {
-  // Gunakan store_id aktif, jika kosong otomatis gunakan 'toko-pusat'
-    const activeStore = currentStoreId || 'toko-pusat';
-    // Sesuaikan 'currentStoreId' dengan variabel ID toko yang sedang aktif di aplikasi Anda
-    const { data, error } = await supabase
-      .from('categories')
-      .select('*')
-      .eq('store_id', activeStore) // Filter data berdasarkan toko aktif atau fallback
-      .order('id', { ascending: true })
+  const activeStore = currentStoreId;
+  
+  if (!activeStore) {
+    console.log("Store ID belum tersedia, batal memuat kategori.");
+    return;
+  }
+
+  const { data, error } = await supabase
+    .from('categories')
+    .select('*')
+    .eq('store_id', activeStore)
+    .order('id', { ascending: true });
+
+  if (error) {
+    console.error('Gagal memuat kategori:', error.message);
+  } else if (data) {
+    setCategories(data);
+  }
 
     if (error) {
       console.error('Gagal memuat kategori:', error.message)
