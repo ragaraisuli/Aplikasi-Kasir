@@ -12,7 +12,7 @@ export default function LoginPage() {
   const [isForgotPassword, setIsForgotPassword] = useState(false);
   const router = useRouter();
 
-const handleLogin = async (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     e.stopPropagation(); // Mencegah event bubbling bawaan form
     
@@ -78,7 +78,6 @@ const handleLogin = async (e: React.FormEvent) => {
               <label className="block text-xs font-semibold text-gray-700 mb-1">Email</label>
               <input
                 type="email"
-                required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="email@gmail.com"
@@ -90,7 +89,6 @@ const handleLogin = async (e: React.FormEvent) => {
               <label className="block text-xs font-semibold text-gray-700 mb-1">Password</label>
               <input
                 type="password"
-                required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
@@ -122,7 +120,6 @@ const handleLogin = async (e: React.FormEvent) => {
               <label className="block text-xs font-semibold text-gray-700 mb-1">Email Terdaftar</label>
               <input
                 type="email"
-                required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Masukkan email akun Anda"

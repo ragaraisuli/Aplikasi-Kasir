@@ -19,6 +19,7 @@
   },
   "devDependencies": {
     "@capacitor/cli": "^8.6.0",
+    "@playwright/test": "^1.65.1",
     "@tailwindcss/turbopack": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
