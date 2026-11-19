@@ -110,21 +110,12 @@ useEffect(() => {
   const [memberSearchTerm, setMemberSearchTerm] = useState('');
   const [memberList, setMemberList] = useState<any[]>([]);
   const [showMemberList, setShowMemberList] = useState(false);
-  const [showSplash, setShowSplash] = useState(true);
 
  // State untuk Reedem poin (POS)
 const [isRedeemingPoints, setIsRedeemingPoints] = useState(false);
 const [pointsToRedeem, setPointsToRedeem] = useState('');
 const [redeemedDiscountAmount, setRedeemedDiscountAmount] = useState(0);
 const [pointValueRupiah, setPointValueRupiah] = useState(100); // Default 1 poin = Rp 100
-
-  useEffect(() => {
-    // Durasi splash screen 2,5 detik (2500 ms)
-    const timer = setTimeout(() => {
-      setShowSplash(false);
-    }, 2500);
-    return () => clearTimeout(timer);
-  }, []);
 
 const handleMenuClick = (tabName: string) => {
     setActiveTab(tabName);
@@ -1772,26 +1763,6 @@ const filteredProfitabilityList = productProfitabilityList.filter((p: any) => {
       profitMargin,
     };
   });
-
-if (showSplash) {
-    return (
-      <div className="flex flex-col items-center justify-center h-screen bg-[#f4f7f6]">
-        <div className="animate-bounce mb-4">
-          <img 
-            src="/icon.png" 
-            alt="Access Kasir Logo" 
-            className="w-40 h-40 object-contain rounded-full shadow-md" 
-          />
-        </div>
-        <h1 className="text-3xl font-bold text-[#1e3a8a] tracking-wide">
-          Access Kasir
-        </h1>
-        <div className="w-32 h-1.5 bg-gray-200 rounded-full mt-6 overflow-hidden">
-          <div className="h-full bg-[#f59e0b] animate-pulse w-full"></div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <main className="flex h-screen bg-gray-100 flex-col">
