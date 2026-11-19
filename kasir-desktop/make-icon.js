@@ -1,15 +1,6 @@
 const fs = require('fs');
 const path = require('path');
 
-// Kode gambar PNG transparan (Base64)
-const base64Data = `
-iVBORw0KGgoAAAANSU2EUgAAAQAAAAEACAYAAABccqhmAAAACXBIWXMAAAsTAAALEwEAmpwYAAAK
-T2lDQ1BQaG90b3Nob3AgSUNDIFByb2ZpbGUAAHjanVNnVFPXFj333vRCS4iAEMAoMinSJhBJRCAA
-AlJYiUDPkiKigAOIYiGJFhRnRAURFUWRnRIUpCgqKiDAgA0XRVFAARtI2m8585Zn5ed7NDjsvfu0
-... (isi string base64) ...
-`;
-
-// Fungsi untuk membuat header ICO sederhana dari PNG transparan
 function buildIcoFromPngBuffer(pngBuffer) {
   const header = Buffer.alloc(6);
   header.writeUInt16LE(0, 0); // Reserved
@@ -28,3 +19,12 @@ function buildIcoFromPngBuffer(pngBuffer) {
 
   return Buffer.concat([header, directory, pngBuffer]);
 }
+
+const inputPngPath = path.join(__dirname, 'icon.png');
+const outputIcoPath = path.join(__dirname, 'icon.ico');
+
+const pngBuffer = fs.readFileSync(inputPngPath);
+const icoBuffer = buildIcoFromPngBuffer(pngBuffer);
+
+fs.writeFileSync(outputIcoPath, icoBuffer);
+console.log('Berhasil membuat icon.ico dari icon.png');
