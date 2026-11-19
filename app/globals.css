@@ -23,3 +23,19 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+@keyframes splashSheen {
+  0% {
+    transform: translateX(-140%) skewX(-24deg);
+  }
+  55% {
+    transform: translateX(140%) skewX(-24deg);
+  }
+  100% {
+    transform: translateX(140%) skewX(-24deg);
+  }
+}
+
+.splash-sheen {
+  animation: splashSheen 2.4s ease-in-out infinite;
+}

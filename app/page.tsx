@@ -276,7 +276,7 @@ useEffect(() => {
   const [newPromoProductIds, setNewPromoProductIds] = useState<number[]>([]) 
   const [newPromoPaymentMethod, setNewPromoPaymentMethod] = useState('all')
   const [newPromoCode, setNewPromoCode] = useState('')
-
+  const [showSplash, setShowSplash] = useState(true);
   // State Modal Struk & Detail Item
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null)
 const feedbackUrl = `https://app-kasirl.vercel.app/feedback?store=${currentStoreId}`;
@@ -623,6 +623,14 @@ const fetchStaffList = async () => {
   }
   setLoadingStaff(false);
 };
+
+useEffect(() => {
+  const timer = setTimeout(() => {
+    setShowSplash(false);
+  }, 2000); // 2000 ms = 2 detik, bisa diubah sesuai selera
+
+  return () => clearTimeout(timer);
+}, []);
 
 // Panggil fetchStaffList saat halaman profil dibuka atau currentStoreId tersedia
 useEffect(() => {
@@ -1763,6 +1771,37 @@ const filteredProfitabilityList = productProfitabilityList.filter((p: any) => {
       profitMargin,
     };
   });
+
+if (showSplash) {
+  return (
+    <div className="flex flex-col items-center justify-center h-screen bg-[#f4f7f6]">
+      <div className="relative mb-5">
+        {/* Glow halus di belakang logo */}
+        <div className="absolute inset-0 rounded-full bg-[#1e3a8a]/15 blur-xl scale-105 pointer-events-none" />
+
+        {/* Wadah logo + pantulan cahaya berjalan */}
+        <div className="relative w-40 h-40 rounded-full overflow-hidden shadow-md bg-white flex items-center justify-center ring-1 ring-black/5">
+          <img
+            src="/icon.png"
+            alt="Logo Aplikasi"
+            className="w-full h-full object-contain"
+          />
+
+          {/* Pantulan cahaya miring */}
+          <div className="splash-sheen pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/65 to-transparent skew-x-[-24deg]" />
+        </div>
+      </div>
+
+      <h1 className="text-3xl font-bold text-[#1e3a8a] tracking-wide">
+        Access Kasir
+      </h1>
+
+      <div className="w-32 h-1.5 bg-gray-200 rounded-full mt-6 overflow-hidden">
+        <div className="h-full bg-[#f59e0b] animate-pulse w-full" />
+      </div>
+    </div>
+  );
+}
 
   return (
     <main className="flex h-screen bg-gray-100 flex-col">
