@@ -627,7 +627,7 @@ const fetchStaffList = async () => {
 useEffect(() => {
   const timer = setTimeout(() => {
     setShowSplash(false);
-  }, 2000); // 2000 ms = 2 detik, bisa diubah sesuai selera
+  }, 2500); // 2500 ms = 2.5 detik, bisa diubah sesuai selera
 
   return () => clearTimeout(timer);
 }, []);
@@ -1775,12 +1775,12 @@ const filteredProfitabilityList = productProfitabilityList.filter((p: any) => {
 if (showSplash) {
   return (
     <div className="flex flex-col items-center justify-center h-screen bg-[#f4f7f6]">
-      <div className="relative mb-5">
+      <div className="relative">
         {/* Glow halus di belakang logo */}
-        <div className="absolute inset-0 rounded-full bg-[#1e3a8a]/15 blur-xl scale-105 pointer-events-none" />
+        <div className="absolute inset-0 rounded-2xl bg-[#1e3a8a]/15 blur-xl scale-105 pointer-events-none" />
 
-        {/* Wadah logo + pantulan cahaya berjalan */}
-        <div className="relative w-64 h-36 rounded-2xl overflow-hidden shadow-md bg-white flex items-center justify-center ring-1 ring-black/5 px-3">
+        {/* Wadah logo transparan + pantulan cahaya berjalan */}
+        <div className="relative w-64 h-36 rounded-2xl overflow-hidden flex items-center justify-center px-3">
           <img
             src="/icon.png"
             alt="Logo Aplikasi"
@@ -1790,14 +1790,6 @@ if (showSplash) {
           {/* Pantulan cahaya miring */}
           <div className="splash-sheen pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/65 to-transparent skew-x-[-24deg]" />
         </div>
-      </div>
-
-      <h1 className="text-3xl font-bold text-[#1e3a8a] tracking-wide">
-        Access Kasir
-      </h1>
-
-      <div className="w-32 h-1.5 bg-gray-200 rounded-full mt-6 overflow-hidden">
-        <div className="h-full bg-[#f59e0b] animate-pulse w-full" />
       </div>
     </div>
   );
