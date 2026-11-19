@@ -1780,7 +1780,7 @@ if (showSplash) {
         <div className="absolute inset-0 rounded-full bg-[#1e3a8a]/15 blur-xl scale-105 pointer-events-none" />
 
         {/* Wadah logo + pantulan cahaya berjalan */}
-        <div className="relative w-40 h-40 rounded-full overflow-hidden shadow-md bg-white flex items-center justify-center ring-1 ring-black/5">
+        <div className="relative w-64 h-36 rounded-2xl overflow-hidden shadow-md bg-white flex items-center justify-center ring-1 ring-black/5 px-3">
           <img
             src="/icon.png"
             alt="Logo Aplikasi"
