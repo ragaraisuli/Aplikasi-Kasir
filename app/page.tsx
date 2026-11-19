@@ -1779,12 +1779,12 @@ if (showSplash) {
         {/* Glow halus di belakang logo */}
         <div className="absolute inset-0 rounded-2xl bg-[#1e3a8a]/15 blur-xl scale-105 pointer-events-none" />
 
-        {/* Wadah logo transparan + pantulan cahaya berjalan */}
-        <div className="relative w-64 h-36 rounded-2xl overflow-hidden flex items-center justify-center px-3">
+        {/* Wadah logo diperbesar + pantulan cahaya berjalan */}
+        <div className="relative w-80 sm:w-96 h-44 sm:h-52 rounded-2xl overflow-hidden flex items-center justify-center px-2">
           <img
             src="/icon.png"
             alt="Logo Aplikasi"
-            className="w-full h-full object-contain"
+            className="w-full h-full object-contain scale-125"
           />
 
           {/* Pantulan cahaya miring */}
