@@ -2699,23 +2699,37 @@ if (showSplash) {
                     className="px-3 py-1.5 border rounded-lg text-sm bg-white text-gray-800"
                   />
                 </div>
-                <div>
-                  <label className="block text-[10px] font-semibold text-gray-500">Sampai Tanggal</label>
-                  <input
-                    type="date"
-                    value={endDate}
-                    onChange={(e) => setEndDate(e.target.value)}
-                    className="px-3 py-1.5 border rounded-lg text-sm bg-white text-gray-800"
-                  />
-                </div>
-                {(startDate || endDate) && (
-                  <button
-                    onClick={() => { setStartDate(''); setEndDate(''); }}
-                    className="mt-4 px-3 py-1.5 bg-gray-200 hover:bg-gray-300 text-gray-700 text-xs font-semibold rounded-lg"
-                  >
-                    Reset
-                  </button>
-                )}
+                <div className="flex flex-col sm:flex-row sm:items-end gap-2 w-full sm:w-auto">
+  <div className="w-full sm:w-auto min-w-0">
+    <label className="block text-[10px] font-semibold text-gray-500">Dari Tanggal</label>
+    <input
+      type="date"
+      value={startDate}
+      onChange={(e) => setStartDate(e.target.value)}
+      className="w-full sm:w-auto min-w-0 px-3 py-1.5 border rounded-lg text-sm bg-white text-gray-800"
+    />
+  </div>
+
+  <div className="w-full sm:w-auto min-w-0">
+    <label className="block text-[10px] font-semibold text-gray-500">Sampai Tanggal</label>
+    <input
+      type="date"
+      value={endDate}
+      onChange={(e) => setEndDate(e.target.value)}
+      className="w-full sm:w-auto min-w-0 px-3 py-1.5 border rounded-lg text-sm bg-white text-gray-800"
+    />
+  </div>
+
+  {(startDate || endDate) && (
+    <button
+      type="button"
+      onClick={() => { setStartDate(''); setEndDate(''); }}
+      className="w-full sm:w-auto px-3 py-1.5 bg-gray-200 hover:bg-gray-300 text-gray-700 text-xs font-semibold rounded-lg"
+    >
+      Reset
+    </button>
+  )}
+</div>
               </div>
             </div>
           </div>
