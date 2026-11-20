@@ -2690,16 +2690,7 @@ if (showSplash) {
               </button>
 
               <div className="flex items-center space-x-2">
-                <div>
-                  <label className="block text-[10px] font-semibold text-gray-500">Dari Tanggal</label>
-                  <input
-                    type="date"
-                    value={startDate}
-                    onChange={(e) => setStartDate(e.target.value)}
-                    className="px-3 py-1.5 border rounded-lg text-sm bg-white text-gray-800"
-                  />
-                </div>
-                <div className="flex flex-col sm:flex-row sm:items-end gap-2 w-full sm:w-auto">
+              <div className="flex flex-col sm:flex-row sm:items-end gap-2 w-full sm:w-auto">
   <div className="w-full sm:w-auto min-w-0">
     <label className="block text-[10px] font-semibold text-gray-500">Dari Tanggal</label>
     <input
