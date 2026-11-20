@@ -2653,17 +2653,18 @@ if (showSplash) {
 
         </div>
       )}
-      {activeTab === 'reports' && (
-        <div className="flex-1 p-8 max-w-6xl mx-auto w-full overflow-y-auto space-y-6">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center bg-white p-6 rounded-xl shadow-sm border border-gray-200 gap-4">
+{activeTab === 'reports' && (
+        <div className="flex-1 p-4 md:p-8 max-w-6xl mx-auto w-full overflow-y-auto space-y-4 md:space-y-6">
+          <div className="flex flex-col md:flex-row justify-between items-stretch md:items-center bg-white p-4 md:p-6 rounded-xl shadow-sm border border-gray-200 gap-4">
             <div>
-              <h2 className="text-xl font-bold text-gray-800">📜 Laporan & Riwayat Transaksi</h2>
+              <h2 className="text-lg md:text-xl font-bold text-gray-800">📜 Laporan & Riwayat Transaksi</h2>
               <p className="text-xs text-gray-500 mt-0.5">Filter transaksi berdasarkan rentang tanggal.</p>
             </div>
-            
-            <div className="flex flex-wrap items-center gap-3">
-              {/* Tombol Ekspor Excel */}
+
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-end gap-3 w-full md:w-auto">
+              {/* Tombol Ekspor */}
               <button
+                type="button"
                 onClick={() => {
                   const headers = ['ID Transaksi', 'Waktu', 'Kasir', 'Metode Pembayaran', 'Total Pembayaran'];
                   const rows = filteredTransactions.map(t => [
@@ -2684,44 +2685,43 @@ if (showSplash) {
                   link.click();
                   document.body.removeChild(link);
                 }}
-                className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-xs font-semibold rounded-lg shadow transition flex items-center gap-1.5"
+                className="w-full sm:w-auto justify-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-xs font-semibold rounded-lg shadow transition flex items-center gap-1.5 shrink-0"
               >
                 📊 Ekspor
               </button>
 
-              <div className="flex items-center space-x-2">
-              <div className="flex flex-col sm:flex-row sm:items-end gap-2 w-full sm:w-auto">
-  <div className="w-full sm:w-auto min-w-0">
-    <label className="block text-[10px] font-semibold text-gray-500">Dari Tanggal</label>
-    <input
-      type="date"
-      value={startDate}
-      onChange={(e) => setStartDate(e.target.value)}
-      className="w-full sm:w-auto min-w-0 px-3 py-1.5 border rounded-lg text-sm bg-white text-gray-800"
-    />
-  </div>
+              {/* Filter Tanggal */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 w-full sm:w-auto">
+                <div className="w-full min-w-0">
+                  <label className="block text-[11px] font-semibold text-gray-600 mb-1">Dari Tanggal</label>
+                  <input
+                    type="date"
+                    value={startDate}
+                    onChange={(e) => setStartDate(e.target.value)}
+                    className="w-full min-w-0 px-3 py-2 border rounded-lg text-sm bg-white text-gray-800"
+                  />
+                </div>
 
-  <div className="w-full sm:w-auto min-w-0">
-    <label className="block text-[10px] font-semibold text-gray-500">Sampai Tanggal</label>
-    <input
-      type="date"
-      value={endDate}
-      onChange={(e) => setEndDate(e.target.value)}
-      className="w-full sm:w-auto min-w-0 px-3 py-1.5 border rounded-lg text-sm bg-white text-gray-800"
-    />
-  </div>
-
-  {(startDate || endDate) && (
-    <button
-      type="button"
-      onClick={() => { setStartDate(''); setEndDate(''); }}
-      className="w-full sm:w-auto px-3 py-1.5 bg-gray-200 hover:bg-gray-300 text-gray-700 text-xs font-semibold rounded-lg"
-    >
-      Reset
-    </button>
-  )}
-</div>
+                <div className="w-full min-w-0">
+                  <label className="block text-[11px] font-semibold text-gray-600 mb-1">Sampai Tanggal</label>
+                  <input
+                    type="date"
+                    value={endDate}
+                    onChange={(e) => setEndDate(e.target.value)}
+                    className="w-full min-w-0 px-3 py-2 border rounded-lg text-sm bg-white text-gray-800"
+                  />
+                </div>
               </div>
+
+              {(startDate || endDate) && (
+                <button
+                  type="button"
+                  onClick={() => { setStartDate(''); setEndDate(''); }}
+                  className="w-full sm:w-auto px-3 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 text-xs font-semibold rounded-lg shrink-0"
+                >
+                  Reset
+                </button>
+              )}
             </div>
           </div>
 
