@@ -128,15 +128,19 @@ const handleSaveSettings = async (e: React.FormEvent) => {
     }
   }
 
-  return (
-    <div className="flex-1 p-8 max-w-6xl mx-auto w-full overflow-y-auto space-y-6">
+return (
+    <div className="flex-1 p-4 md:p-8 max-w-6xl mx-auto w-full overflow-y-auto space-y-4 md:space-y-6">
       {/* Header Halaman */}
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 flex justify-between items-center">
-        <div>
-          <h2 className="text-xl font-bold text-gray-800">⭐ Manajemen Membership & Poin Pelanggan</h2>
-          <p className="text-xs text-gray-500 mt-0.5">Kelola data pelanggan setia dan atur sistem reward poin toko Anda.</p>
+      <div className="bg-white p-4 md:p-6 rounded-xl shadow-sm border border-gray-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+        <div className="min-w-0">
+          <h2 className="text-lg md:text-xl font-bold text-gray-800">
+            ⭐ Manajemen Membership & Poin Pelanggan
+          </h2>
+          <p className="text-xs text-gray-500 mt-0.5">
+            Kelola data pelanggan setia dan atur sistem reward poin toko Anda.
+          </p>
         </div>
-        <span className="px-3 py-1 bg-blue-50 text-blue-600 rounded-full text-xs font-semibold uppercase">
+        <span className="px-3 py-1 bg-blue-50 text-blue-600 rounded-full text-xs font-semibold uppercase self-start sm:self-auto shrink-0">
           Role: {userRole}
         </span>
       </div>
