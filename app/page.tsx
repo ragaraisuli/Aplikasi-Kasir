@@ -2686,7 +2686,7 @@ if (showSplash) {
                 }}
                 className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-xs font-semibold rounded-lg shadow transition flex items-center gap-1.5"
               >
-                📊 Ekspor ke Excel
+                📊 Ekspor
               </button>
 
               <div className="flex items-center space-x-2">
