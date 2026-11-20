@@ -1996,41 +1996,49 @@ if (showSplash) {
         <div className="flex-1 p-8 max-w-6xl mx-auto w-full overflow-y-auto space-y-6">
 
 {/* Header & Filter Tanggal */}
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center bg-white p-4 rounded-xl shadow-sm border border-gray-200 gap-4">
-            <h2 className="text-xl font-bold text-gray-800">📊 Ringkasan Toko & Penjualan</h2>
-            <div className="flex items-center gap-2 text-xs flex-wrap">
-              <span className="text-gray-500 font-semibold">Filter Tanggal:</span>
-              <input 
-                type="date" 
-                value={startDate} 
-                onChange={(e) => setStartDate(e.target.value)} 
-                className="border p-1.5 rounded-lg text-gray-700"
-              />
-              <span className="text-gray-400">s/d</span>
-              <input 
-                type="date" 
-                value={endDate} 
-                onChange={(e) => setEndDate(e.target.value)} 
-                className="border p-1.5 rounded-lg text-gray-700"
-              />
-              {(startDate || endDate) && (
-                <button 
-                  onClick={() => { setStartDate(''); setEndDate(''); }} 
-                  className="px-2.5 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-lg font-medium"
-                >
-                  Reset
-                </button>
-              )}
-              {/* Tombol Ekspor Data */}
-              <button 
-                onClick={exportToCSV}
-                className="flex items-center gap-1.5 bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded-lg font-medium shadow-sm transition-colors ml-2"
-                title="Unduh data laporan sesuai filter tanggal"
-              >
-                📥 Ekspor Excel (CSV)
-              </button>
-            </div>
-          </div>
+<div className="flex flex-col md:flex-row justify-between items-stretch md:items-center bg-white p-4 rounded-xl shadow-sm border border-gray-200 gap-4">
+  <h2 className="text-lg md:text-xl font-bold text-gray-800">📊 Ringkasan Toko & Penjualan</h2>
+
+  <div className="flex flex-col sm:flex-row sm:items-center gap-2 text-xs w-full md:w-auto">
+    <span className="text-gray-500 font-semibold shrink-0">Filter Tanggal:</span>
+
+    <div className="grid grid-cols-1 sm:flex sm:items-center gap-2 w-full sm:w-auto min-w-0">
+      <input
+        type="date"
+        value={startDate}
+        onChange={(e) => setStartDate(e.target.value)}
+        className="w-full sm:w-auto min-w-0 border p-2 sm:p-1.5 rounded-lg text-gray-700 bg-white"
+      />
+      <span className="text-gray-400 text-center sm:text-left shrink-0">s/d</span>
+      <input
+        type="date"
+        value={endDate}
+        onChange={(e) => setEndDate(e.target.value)}
+        className="w-full sm:w-auto min-w-0 border p-2 sm:p-1.5 rounded-lg text-gray-700 bg-white"
+      />
+    </div>
+
+    {(startDate || endDate) && (
+      <button
+        type="button"
+        onClick={() => { setStartDate(''); setEndDate(''); }}
+        className="w-full sm:w-auto px-3 py-2 sm:py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-lg font-medium shrink-0"
+      >
+        Reset
+      </button>
+    )}
+
+    {/* Tombol Ekspor Data */}
+    <button
+      type="button"
+      onClick={exportToCSV}
+      className="w-full sm:w-auto justify-center flex items-center gap-1.5 bg-green-600 hover:bg-green-700 text-white px-3 py-2 sm:py-1.5 rounded-lg font-medium shadow-sm transition-colors sm:ml-1 shrink-0"
+      title="Unduh data laporan sesuai filter tanggal"
+    >
+      📥 Ekspor Excel (CSV)
+    </button>
+  </div>
+</div>
 
           {/* Kartu Statistik Utama (Bruto, Netto Realtime, Transaksi, Piutang, Produk) */}
           <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
@@ -3761,6 +3769,8 @@ onClick={() => handleOpenPayModal(d)}
                       <span className="absolute left-3 text-xs font-bold text-gray-500">Rp</span>
                       <input
                         type="text"
+                        inputMode="numeric"
+                        pattern="[0-9]*"
                         placeholder="0"
                         value={cashPaid}
                         onChange={handleCashPaidChange}

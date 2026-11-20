@@ -164,7 +164,8 @@ return (
             <div>
               <label className="block text-xs font-semibold text-gray-600 mb-1">Nomor WhatsApp / HP</label>
               <input
-                type="text"
+                type="tel"
+                inputMode="numeric"
                 placeholder="Contoh: 081234567890"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
