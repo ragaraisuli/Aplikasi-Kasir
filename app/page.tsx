@@ -4199,146 +4199,177 @@ onClick={() => handleOpenPayModal(d)}
             </form>
           </div>
 
-<div className="bg-white p-6 rounded-xl shadow border border-gray-200">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg font-bold text-gray-800">Daftar Produk Terdaftar ({filteredTableProducts.length})</h2>
-              <input
-                type="text"
-                placeholder="🔍 Cari produk..."
-                value={tableSearchTerm}
-                onChange={(e) => setTableSearchTerm(e.target.value)}
-                className="px-3 py-1.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-800 text-sm w-60 shadow-sm"
-              />
-            </div>
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse">
-                <thead>
-                  <tr className="border-b bg-gray-50 text-gray-600 text-xs uppercase">
-                    <th className="py-3 px-4">Foto</th>
-                    <th className="py-3 px-4">SKU / Barcode / Nama</th>
-                    <th className="py-3 px-4">Kategori</th>
-                    
-                    {/* Kolom Harga Beli - Hanya Owner */}
-                    {userRole === 'owner' && <th className="py-3 px-4">Harga Beli</th>}
-                    
-                    {/* Kolom Harga Jual - Tampil untuk Owner maupun Kasir */}
-                    <th className="py-3 px-4">Harga Jual</th>
-                    
-                    <th className="py-3 px-4">Stok</th>
-                    
-                    {/* Kolom Aksi Edit/Hapus - Hanya Owner */}
-                    {userRole === 'owner' && <th className="py-3 px-4 text-center">Aksi</th>}
-                  </tr>
-                </thead>
-                <tbody className="divide-y text-sm text-gray-700">
-                  {filteredTableProducts.length === 0 ? (
-                    <tr>
-                      <td colSpan={userRole === 'owner' ? 7 : 6} className="text-center py-6 text-gray-400 text-sm">
-                        Tidak ada produk ditemukan.
-                      </td>
-                    </tr>
-                  ) : (
-                    filteredTableProducts.map((p) => (
-                      <tr key={p.id} className="hover:bg-gray-50">
-                        <td className="py-3 px-4">
-                          {p.image_url ? (
-                            <img src={p.image_url} alt={p.name} className="w-10 h-10 object-cover rounded-md border" />
-                          ) : (
-                            <div className="w-10 h-10 bg-gray-100 rounded-md border flex items-center justify-center text-[9px] text-gray-400">
-                              No Pic
-                            </div>
-                          )}
-                        </td>
-                        <td className="py-3 px-4">
-                          <p className="font-medium text-gray-800">{p.name}</p>
-                          <div className="flex space-x-2 text-xs">
-                            {p.sku && <span className="text-blue-500 font-mono">SKU: {p.sku}</span>}
-                            {p.barcode && <span className="text-gray-400 font-mono">BC: {p.barcode}</span>}
-                          </div>
-                        </td>
-                        <td className="py-3 px-4 text-xs text-gray-600">
-                          <span className="bg-gray-100 px-2 py-1 rounded">{p.category || 'Umum'}</span>
-                        </td>
-
-                        {/* Harga Beli - Khusus Owner */}
-                        {userRole === 'owner' && (
-                          <td className="py-3 px-4 text-gray-500">
-                            Rp {(p.buy_price ?? 0).toLocaleString('id-ID')}
-                          </td>
-                        )}
-
-                        {/* Harga Jual - Tampil untuk Semua (Owner & Kasir) */}
-                        <td className="py-3 px-4 text-blue-600 font-semibold">
-                          Rp {(p.sell_price ?? p.price ?? 0).toLocaleString('id-ID')}
-                        </td>
-
-                        {/* Kolom Stok */}
-<td className="py-3 px-4">
-  <div className="inline-flex items-center gap-1.5 bg-gray-50 border border-gray-200 rounded-lg p-1">
-    
-    {/* Tombol Minus (-): Hanya dirender jika userRole adalah 'owner' */}
-    {userRole === 'owner' && (
-      <button
-        type="button"
-        onClick={() => handleQuickStockUpdate(p.id, p.stock, -1)}
-        disabled={p.stock <= 0}
-        className="w-6 h-6 flex items-center justify-center bg-white hover:bg-rose-50 text-rose-600 border border-gray-200 rounded font-bold text-xs shadow-sm disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-        title="Kurangi 1 Stok"
-      >
-        -
-      </button>
-    )}
-
-    {/* Angka Stok (Selalu tampil untuk owner maupun kasir) */}
-    <span className={`px-2 font-bold text-xs ${
-      p.stock === 0
-        ? 'text-rose-600'
-        : p.stock <= 5
-        ? 'text-amber-600'
-        : 'text-emerald-700'
-    }`}>
-      {p.stock} <span className="text-[10px] font-normal text-gray-500">{p.unit || 'pcs'}</span>
-    </span>
-
-    {/* Tombol Plus (+): Selalu tampil untuk owner dan kasir */}
-    <button
-      type="button"
-      onClick={() => handleQuickStockUpdate(p.id, p.stock, 1)}
-      className="w-6 h-6 flex items-center justify-center bg-white hover:bg-emerald-50 text-emerald-600 border border-gray-200 rounded font-bold text-xs shadow-sm transition-colors"
-      title="Tambah 1 Stok"
-    >
-      +
-    </button>
-
+<div className="bg-white p-4 md:p-6 rounded-xl shadow border border-gray-200">
+  <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3 mb-4">
+    <h2 className="text-base md:text-lg font-bold text-gray-800">
+      Daftar Produk Terdaftar ({filteredTableProducts.length})
+    </h2>
+    <input
+      type="text"
+      placeholder="🔍 Cari produk..."
+      value={tableSearchTerm}
+      onChange={(e) => setTableSearchTerm(e.target.value)}
+      className="px-3 py-1.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-800 text-sm w-full sm:w-60 shadow-sm"
+    />
   </div>
-</td>
 
-                        {/* Aksi Edit/Hapus - Khusus Owner */}
-                        {userRole === 'owner' && (
-                          <td className="py-3 px-4 text-center space-x-2">
-                            <button
-                              onClick={() => handleEditClick(p)}
-                              className="px-2.5 py-1 bg-yellow-500 hover:bg-yellow-600 text-white rounded text-xs font-semibold shadow"
-                            >
-                              Edit
-                            </button>
-                            <button
-                              onClick={() => handleDeleteClick(p.id, p.name)}
-                              className="px-2.5 py-1 bg-red-500 hover:bg-red-600 text-white rounded text-xs font-semibold shadow"
-                            >
-                              Hapus
-                            </button>
-                          </td>
-                        )}
-                      </tr>
-                    ))
+  <div className="overflow-x-auto">
+    <table className="w-full text-left border-collapse">
+      <thead>
+        <tr className="border-b bg-gray-50 text-gray-600 text-xs uppercase">
+          {/* Kolom Foto: Hanya tampil di layar md ke atas (Laptop/Tablet) */}
+          <th className="hidden md:table-cell py-3 px-4">Foto</th>
+          <th className="py-2.5 px-2.5 md:py-3 md:px-4">SKU / Barcode / Nama</th>
+          <th className="py-2.5 px-2.5 md:py-3 md:px-4">Kategori</th>
+
+          {/* Kolom Harga Beli - Hanya Owner */}
+          {userRole === 'owner' && (
+            <th className="py-2.5 px-2.5 md:py-3 md:px-4">Harga Beli</th>
+          )}
+
+          {/* Kolom Harga Jual - Tampil untuk Owner maupun Kasir */}
+          <th className="py-2.5 px-2.5 md:py-3 md:px-4">Harga Jual</th>
+
+          <th className="py-2.5 px-2.5 md:py-3 md:px-4">Stok</th>
+
+          {/* Kolom Aksi Edit/Hapus - Hanya Owner */}
+          {userRole === 'owner' && (
+            <th className="py-2.5 px-2.5 md:py-3 md:px-4 text-center">Aksi</th>
+          )}
+        </tr>
+      </thead>
+      <tbody className="divide-y text-xs md:text-sm text-gray-700">
+        {filteredTableProducts.length === 0 ? (
+          <tr>
+            <td
+              colSpan={userRole === 'owner' ? 6 : 5}
+              className="md:hidden text-center py-6 text-gray-400 text-sm"
+            >
+              Tidak ada produk ditemukan.
+            </td>
+            <td
+              colSpan={userRole === 'owner' ? 7 : 6}
+              className="hidden md:table-cell text-center py-6 text-gray-400 text-sm"
+            >
+              Tidak ada produk ditemukan.
+            </td>
+          </tr>
+        ) : (
+          filteredTableProducts.map((p) => (
+            <tr key={p.id} className="hover:bg-gray-50">
+              {/* Sel Foto: Disembunyikan di HP, tampil di md ke atas */}
+              <td className="hidden md:table-cell py-3 px-4">
+                {p.image_url ? (
+                  <img
+                    src={p.image_url}
+                    alt={p.name}
+                    className="w-10 h-10 object-cover rounded-md border"
+                  />
+                ) : (
+                  <div className="w-10 h-10 bg-gray-100 rounded-md border flex items-center justify-center text-[9px] text-gray-400">
+                    No Pic
+                  </div>
+                )}
+              </td>
+
+              <td className="py-2.5 px-2.5 md:py-3 md:px-4">
+                <p className="font-medium text-gray-800">{p.name}</p>
+                <div className="flex flex-wrap gap-x-2 text-[11px] md:text-xs">
+                  {p.sku && <span className="text-blue-500 font-mono">SKU: {p.sku}</span>}
+                  {p.barcode && <span className="text-gray-400 font-mono">BC: {p.barcode}</span>}
+                </div>
+              </td>
+
+              <td className="py-2.5 px-2.5 md:py-3 md:px-4 text-[11px] md:text-xs text-gray-600">
+                <span className="bg-gray-100 px-2 py-1 rounded whitespace-nowrap">
+                  {p.category || 'Umum'}
+                </span>
+              </td>
+
+              {/* Harga Beli - Khusus Owner */}
+              {userRole === 'owner' && (
+                <td className="py-2.5 px-2.5 md:py-3 md:px-4 text-gray-500 whitespace-nowrap">
+                  Rp {(p.buy_price ?? 0).toLocaleString('id-ID')}
+                </td>
+              )}
+
+              {/* Harga Jual - Tampil untuk Semua (Owner & Kasir) */}
+              <td className="py-2.5 px-2.5 md:py-3 md:px-4 text-blue-600 font-semibold whitespace-nowrap">
+                Rp {(p.sell_price ?? p.price ?? 0).toLocaleString('id-ID')}
+              </td>
+
+              {/* Kolom Stok */}
+              <td className="py-2.5 px-2.5 md:py-3 md:px-4">
+                <div className="inline-flex items-center gap-1 bg-gray-50 border border-gray-200 rounded-lg p-1">
+                  {/* Tombol Minus (-): Hanya dirender jika userRole adalah 'owner' */}
+                  {userRole === 'owner' && (
+                    <button
+                      type="button"
+                      onClick={() => handleQuickStockUpdate(p.id, p.stock, -1)}
+                      disabled={p.stock <= 0}
+                      className="w-6 h-6 flex items-center justify-center bg-white hover:bg-rose-50 text-rose-600 border border-gray-200 rounded font-bold text-xs shadow-sm disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                      title="Kurangi 1 Stok"
+                    >
+                      -
+                    </button>
                   )}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      )}
+
+                  {/* Angka Stok */}
+                  <span
+                    className={`px-1.5 md:px-2 font-bold text-xs whitespace-nowrap ${
+                      p.stock === 0
+                        ? 'text-rose-600'
+                        : p.stock <= 5
+                        ? 'text-amber-600'
+                        : 'text-emerald-700'
+                    }`}
+                  >
+                    {p.stock}{' '}
+                    <span className="text-[10px] font-normal text-gray-500">
+                      {p.unit || 'pcs'}
+                    </span>
+                  </span>
+
+                  {/* Tombol Plus (+) */}
+                  <button
+                    type="button"
+                    onClick={() => handleQuickStockUpdate(p.id, p.stock, 1)}
+                    className="w-6 h-6 flex items-center justify-center bg-white hover:bg-emerald-50 text-emerald-600 border border-gray-200 rounded font-bold text-xs shadow-sm transition-colors"
+                    title="Tambah 1 Stok"
+                  >
+                    +
+                  </button>
+                </div>
+              </td>
+
+              {/* Aksi Edit/Hapus - Khusus Owner */}
+              {userRole === 'owner' && (
+                <td className="py-2.5 px-2.5 md:py-3 md:px-4 text-center">
+                  <div className="inline-flex flex-col sm:flex-row gap-1.5 sm:space-x-2 sm:gap-0">
+                    <button
+                      onClick={() => handleEditClick(p)}
+                      className="px-2.5 py-1 bg-yellow-500 hover:bg-yellow-600 text-white rounded text-xs font-semibold shadow"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => handleDeleteClick(p.id, p.name)}
+                      className="px-2.5 py-1 bg-red-500 hover:bg-red-600 text-white rounded text-xs font-semibold shadow"
+                    >
+                      Hapus
+                    </button>
+                  </div>
+                </td>
+              )}
+            </tr>
+          ))
+        )}
+      </tbody>
+    </table>
+  </div>
+</div>
+</div>
+)}
 
 {/* Visualisasi Modal Struk */}
 {selectedTransaction && (
