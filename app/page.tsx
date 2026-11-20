@@ -323,7 +323,7 @@ const handlePrintClick = () => {
   const [newBarcode, setNewBarcode] = useState('')
   const [newCategory, setNewCategory] = useState('Sembako')
   const [newImageUrl, setNewImageUrl] = useState('')
-
+ const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [userName, setUserName] = useState('Pengguna');
  
   // State untuk memilih tahun pada laporan tren bulanan produk
@@ -1796,28 +1796,40 @@ if (showSplash) {
 }
 
   return (
-    <main className="flex h-screen bg-gray-100 flex-col">
-      <header className="bg-white border-b px-6 py-3 flex justify-between items-center shadow-sm">
-        <div className="flex items-center space-x-4">
-<h1 className="text-xl font-bold text-blue-600">
-  {storeProfile.store_name || 'POS SaaS Toko'}
-</h1>
-          <div className="flex bg-gray-100 p-1 rounded-lg">
+    <main className="flex min-h-screen md:h-screen bg-gray-100 flex-col overflow-x-hidden">
+<header className="bg-white border-b px-4 md:px-6 py-3 flex justify-between items-center shadow-sm relative z-30">
+        {/* Bagian Kiri: Tombol Hamburger (HP) + Nama Toko + Menu Desktop */}
+        <div className="flex items-center space-x-3 md:space-x-4 min-w-0">
+          <button
+            type="button"
+            onClick={() => setIsMobileMenuOpen((prev) => !prev)}
+            aria-label="Buka Menu Navigasi"
+            className="md:hidden p-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-800 active:scale-95 transition shrink-0"
+          >
+            {isMobileMenuOpen ? '✕' : '☰'}
+          </button>
+
+          <h1 className="text-base sm:text-xl font-bold text-blue-600 truncate">
+            {storeProfile.store_name || 'POS SaaS Toko'}
+          </h1>
+
+          {/* Navigasi Horizontal: Hanya tampil di layar md ke atas (Laptop/Tablet) */}
+          <div className="hidden md:flex bg-gray-100 p-1 rounded-lg">
             {/* Tombol Beranda HANYA TAMPIL UNTUK OWNER */}
-  {userRole === 'owner' && (
-            <button
-              onClick={() => handleTabChange('Beranda')}
-              className={`px-4 py-1.5 rounded-md text-sm font-medium transition ${
-                activeTab === 'Beranda' ? 'bg-blue-600 text-white shadow-sm': 'text-gray-600 hover:bg-gray-100'
-              }`}
-            >
-              Beranda
-            </button>
+            {userRole === 'owner' && (
+              <button
+                onClick={() => handleTabChange('Beranda')}
+                className={`px-4 py-1.5 rounded-md text-sm font-medium transition ${
+                  activeTab === 'Beranda' ? 'bg-blue-600 text-white shadow-sm' : 'text-gray-600 hover:bg-gray-100'
+                }`}
+              >
+                Beranda
+              </button>
             )}
             <button
               onClick={() => handleTabChange('reports')}
               className={`px-4 py-1.5 rounded-md text-sm font-medium transition ${
-                activeTab === 'reports' ? 'bg-blue-600 text-white shadow-sm': 'text-gray-600 hover:bg-gray-100'
+                activeTab === 'reports' ? 'bg-blue-600 text-white shadow-sm' : 'text-gray-600 hover:bg-gray-100'
               }`}
             >
               Laporan & Riwayat
@@ -1825,31 +1837,29 @@ if (showSplash) {
             <button
               onClick={() => handleTabChange('debts')}
               className={`px-4 py-1.5 rounded-md text-sm font-medium transition ${
-                activeTab === 'debts' ? 'bg-blue-600 text-white shadow-sm'
-        : 'text-gray-600 hover:bg-gray-100'
+                activeTab === 'debts' ? 'bg-blue-600 text-white shadow-sm' : 'text-gray-600 hover:bg-gray-100'
               }`}
             >
               Utang Piutang
             </button>
-<button
-  onClick={() => handleTabChange('Membership')}
-  className={`px-4 py-1.5 rounded-md text-sm font-medium transition ${
-    activeTab === 'Membership' ? 'bg-blue-600 text-white shadow-sm' : 'text-gray-600 hover:bg-gray-100'
-  }`}
->
-  Membership
-</button>
-           {userRole === 'owner' && (
             <button
-              onClick={() => handleTabChange('promos')}
+              onClick={() => handleTabChange('Membership')}
               className={`px-4 py-1.5 rounded-md text-sm font-medium transition ${
-                activeTab === 'promos' ? 'bg-blue-600 text-white shadow-sm' : 'text-gray-600 hover:bg-gray-100'
+                activeTab === 'Membership' ? 'bg-blue-600 text-white shadow-sm' : 'text-gray-600 hover:bg-gray-100'
               }`}
             >
-              Diskon & Promo
+              Membership
             </button>
+            {userRole === 'owner' && (
+              <button
+                onClick={() => handleTabChange('promos')}
+                className={`px-4 py-1.5 rounded-md text-sm font-medium transition ${
+                  activeTab === 'promos' ? 'bg-blue-600 text-white shadow-sm' : 'text-gray-600 hover:bg-gray-100'
+                }`}
+              >
+                Diskon & Promo
+              </button>
             )}
-            
             <button
               onClick={() => handleTabChange('pos')}
               className={`px-4 py-1.5 rounded-md text-sm font-medium transition ${
@@ -1861,50 +1871,118 @@ if (showSplash) {
             <button
               onClick={() => handleTabChange('products')}
               className={`px-4 py-1.5 rounded-md text-sm font-medium transition ${
-                activeTab === 'products' ? 'bg-blue-600 text-white shadow-sm': 'text-gray-600 hover:bg-gray-100'
+                activeTab === 'products' ? 'bg-blue-600 text-white shadow-sm' : 'text-gray-600 hover:bg-gray-100'
               }`}
             >
               Kelola Produk
             </button>
 
-{/* Hanya tampil jika akun yang aktif adalah Owner */}
-{userRole === 'owner' && (
-  <>
-    <button
-      onClick={() => handleTabChange('voc')}
-      className={`px-4 py-1.5 text-xs font-semibold rounded-lg transition ${
-        activeTab === 'voc' 
-          ? 'bg-blue-600 text-white shadow-sm' 
-          : 'text-gray-600 hover:bg-gray-100'
-      }`}
-    >
-      💬 Suara Pelanggan
-    </button>
+            {/* Hanya tampil jika akun yang aktif adalah Owner */}
+            {userRole === 'owner' && (
+              <>
+                <button
+                  onClick={() => handleTabChange('voc')}
+                  className={`px-4 py-1.5 text-xs font-semibold rounded-lg transition ${
+                    activeTab === 'voc'
+                      ? 'bg-blue-600 text-white shadow-sm'
+                      : 'text-gray-600 hover:bg-gray-100'
+                  }`}
+                >
+                  💬 Suara Pelanggan
+                </button>
 
-    <button
-      onClick={() => handleTabChange('profile')}
-      className={`px-4 py-1.5 rounded-md text-sm font-medium transition ${
-        activeTab === 'profile' ? 'bg-blue-600 text-white shadow-sm' : 'text-gray-600 hover:bg-gray-100'
-      }`}
-    >
-      ⚙️ Profil Toko
-    </button>
-  </>
-)}
-
+                <button
+                  onClick={() => handleTabChange('profile')}
+                  className={`px-4 py-1.5 rounded-md text-sm font-medium transition ${
+                    activeTab === 'profile' ? 'bg-blue-600 text-white shadow-sm' : 'text-gray-600 hover:bg-gray-100'
+                  }`}
+                >
+                  ⚙️ Profil Toko
+                </button>
+              </>
+            )}
           </div>
         </div>
-<div className="flex items-center space-x-2">
-  <span className="text-sm font-medium text-gray-700">
-    {userRole === 'owner' ? 'Owner:' : 'Kasir:'} <span className="font-bold text-gray-900">{userName || cashierName}</span>        
-</span>
-        <button
-  onClick={handleLogout}
-  className="px-3 py-1 bg-red-50 hover:bg-red-100 text-red-600 text-xs font-semibold rounded-lg border border-red-200 transition"
->
-  🚪 Logout
-</button>
-</div>
+
+        {/* Bagian Kanan: Info User & Logout */}
+        <div className="flex items-center space-x-2 shrink-0">
+          <span className="hidden sm:inline text-sm font-medium text-gray-700">
+            {userRole === 'owner' ? 'Owner:' : 'Kasir:'}{' '}
+            <span className="font-bold text-gray-900">{userName || cashierName}</span>
+          </span>
+          <button
+            onClick={handleLogout}
+            className="px-2.5 sm:px-3 py-1 bg-red-50 hover:bg-red-100 text-red-600 text-xs font-semibold rounded-lg border border-red-200 transition"
+          >
+            🚪 <span className="hidden sm:inline">Logout</span>
+          </button>
+        </div>
+
+        {/* HAMBURGER DROPDOWN TURUN KE BAWAH (Glassmorphism - Khusus HP) */}
+        {isMobileMenuOpen && (
+          <>
+            {/* Area luar transparan untuk menutup menu saat diklik */}
+            <div
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="md:hidden fixed inset-0 z-30 bg-slate-900/15 backdrop-blur-[1px]"
+            />
+
+            {/* Bar menu turun ke bawah tepat di bawah header */}
+            <div className="md:hidden absolute top-full left-0 right-0 z-40 bg-white/80 backdrop-blur-md border-b border-white/60 shadow-xl px-4 py-3 max-h-[75vh] overflow-y-auto">
+              <div className="flex items-center justify-between text-xs text-gray-600 pb-2 mb-2 border-b border-gray-200/70">
+                <span>
+                  {userRole === 'owner' ? 'Owner:' : 'Kasir:'}{' '}
+                  <span className="font-bold text-gray-800">
+                    {userName || cashierName}
+                  </span>
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="text-gray-600 hover:text-gray-900 font-semibold px-2 py-0.5 rounded bg-white/60"
+                >
+                  Tutup ✕
+                </button>
+              </div>
+
+              <nav className="flex flex-col space-y-1">
+                {[
+                  { id: 'Beranda', label: '📊 Beranda', ownerOnly: true },
+                  { id: 'reports', label: '📜 Laporan & Riwayat', ownerOnly: false },
+                  { id: 'debts', label: '📒 Utang Piutang', ownerOnly: false },
+                  { id: 'Membership', label: '⭐ Membership', ownerOnly: false },
+                  { id: 'promos', label: '🎁 Diskon & Promo', ownerOnly: true },
+                  { id: 'pos', label: '🛒 Kasir (POS)', ownerOnly: false },
+                  { id: 'products', label: '📦 Kelola Produk', ownerOnly: false },
+                  { id: 'voc', label: '💬 Suara Pelanggan', ownerOnly: true },
+                  { id: 'profile', label: '⚙️ Profil Toko', ownerOnly: true },
+                ]
+                  .filter((item) => !item.ownerOnly || userRole === 'owner')
+                  .map((item) => {
+                    const isActive = activeTab === item.id;
+                    return (
+                      <button
+                        key={item.id}
+                        type="button"
+                        onClick={() => {
+                          handleTabChange(item.id);
+                          setIsMobileMenuOpen(false);
+                        }}
+                        className={`w-full text-left px-3.5 py-2 rounded-xl text-sm font-semibold transition flex items-center justify-between ${
+                          isActive
+                            ? 'bg-blue-600/90 text-white shadow-sm'
+                            : 'bg-white/55 hover:bg-white/85 text-gray-800'
+                        }`}
+                      >
+                        <span>{item.label}</span>
+                        {isActive && <span className="text-xs">●</span>}
+                      </button>
+                    );
+                  })}
+              </nav>
+            </div>
+          </>
+        )}
       </header>
 
 
@@ -3336,7 +3414,7 @@ onClick={() => handleOpenPayModal(d)}
         </div>
       )}
 {activeTab === 'pos' && (
-  <div className="flex flex-col md:flex-row flex-1 overflow-hidden bg-gray-100">
+  <div className="flex flex-col md:flex-row flex-1 md:overflow-hidden bg-gray-100">
     {/* SISI KIRI: KATALOG PRODUK & SCANNER */}
     <div className="w-full md:w-3/5 p-4 flex flex-col border-r border-gray-200 overflow-y-auto">
       <form onSubmit={handleBarcodeSubmit} className="mb-3 bg-blue-50 p-3 rounded-xl border border-blue-100 flex items-center space-x-2">
