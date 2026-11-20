@@ -1927,25 +1927,31 @@ if (showSplash) {
               className="md:hidden fixed inset-0 z-30 bg-slate-900/15 backdrop-blur-[1px]"
             />
 
-            {/* Bar menu turun ke bawah tepat di bawah header */}
-            <div className="md:hidden absolute top-full left-0 right-0 z-40 bg-white/80 backdrop-blur-md border-b border-white/60 shadow-xl px-4 py-3 max-h-[75vh] overflow-y-auto">
-              <div className="flex items-center justify-between text-xs text-gray-600 pb-2 mb-2 border-b border-gray-200/70">
+{/* Bar menu turun ke bawah tepat di bawah header (Glassmorphism Kuat) */}
+            <div
+              style={{
+                WebkitBackdropFilter: 'blur(14px) saturate(150%)',
+                backdropFilter: 'blur(14px) saturate(150%)',
+              }}
+              className="md:hidden absolute top-full left-0 right-0 z-40 bg-white/55 border-b border-white/80 shadow-2xl px-4 py-3 max-h-[75vh] overflow-y-auto"
+            >
+              <div className="flex items-center justify-between text-xs text-gray-700 pb-2 mb-2 border-b border-white/70">
                 <span>
                   {userRole === 'owner' ? 'Owner:' : 'Kasir:'}{' '}
-                  <span className="font-bold text-gray-800">
+                  <span className="font-bold text-gray-900">
                     {userName || cashierName}
                   </span>
                 </span>
                 <button
                   type="button"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="text-gray-600 hover:text-gray-900 font-semibold px-2 py-0.5 rounded bg-white/60"
+                  className="text-gray-700 hover:text-gray-900 font-semibold px-2.5 py-0.5 rounded-lg bg-white/70 border border-white/80 shadow-xs"
                 >
                   Tutup ✕
                 </button>
               </div>
 
-              <nav className="flex flex-col space-y-1">
+              <nav className="flex flex-col space-y-1.5">
                 {[
                   { id: 'Beranda', label: '📊 Beranda', ownerOnly: true },
                   { id: 'reports', label: '📜 Laporan & Riwayat', ownerOnly: false },
@@ -1968,10 +1974,10 @@ if (showSplash) {
                           handleTabChange(item.id);
                           setIsMobileMenuOpen(false);
                         }}
-                        className={`w-full text-left px-3.5 py-2 rounded-xl text-sm font-semibold transition flex items-center justify-between ${
+                        className={`w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-semibold transition flex items-center justify-between border ${
                           isActive
-                            ? 'bg-blue-600/90 text-white shadow-sm'
-                            : 'bg-white/55 hover:bg-white/85 text-gray-800'
+                            ? 'bg-blue-600/85 text-white border-blue-400/60 shadow-sm'
+                            : 'bg-white/45 hover:bg-white/75 text-gray-900 border-white/70'
                         }`}
                       >
                         <span>{item.label}</span>
