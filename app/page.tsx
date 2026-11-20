@@ -324,6 +324,7 @@ const handlePrintClick = () => {
   const [newCategory, setNewCategory] = useState('Sembako')
   const [newImageUrl, setNewImageUrl] = useState('')
  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+ const [isMobileCatalogOpen, setIsMobileCatalogOpen] = useState(false);
   const [userName, setUserName] = useState('Pengguna');
  
   // State untuk memilih tahun pada laporan tren bulanan produk
@@ -3434,102 +3435,229 @@ onClick={() => handleOpenPayModal(d)}
       )}
 {activeTab === 'pos' && (
   <div className="flex flex-col md:flex-row flex-1 md:overflow-hidden bg-gray-100">
-    {/* SISI KIRI: KATALOG PRODUK & SCANNER */}
-    <div className="w-full md:w-3/5 p-4 flex flex-col border-r border-gray-200 overflow-y-auto">
-      <form onSubmit={handleBarcodeSubmit} className="mb-3 bg-blue-50 p-3 rounded-xl border border-blue-100 flex items-center space-x-2">
-        <span className="text-sm font-bold text-blue-600 whitespace-nowrap">📷 Scan Barcode:</span>
-        <input
-          ref={barcodeInputRef}
-          type="text"
-          placeholder="Arahkan scanner atau ketik barcode/SKU lalu Enter..."
-          value={barcodeInput}
-          onChange={(e) => setBarcodeInput(e.target.value)}
-          className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-800 text-sm font-mono"
-        />
-      </form>
+{/* SISI KIRI: KATALOG PRODUK & SCANNER */}
+    <div className="w-full md:w-3/5 p-3 md:p-4 flex flex-col md:border-r border-gray-200 md:overflow-y-auto">
+      {/* Tombol Toggle Dropdown Katalog & Scanner - Khusus HP (< md) */}
+      <div className="md:hidden">
+        <button
+          type="button"
+          onClick={() => setIsMobileCatalogOpen((prev) => !prev)}
+          style={{
+            WebkitBackdropFilter: 'blur(14px) saturate(150%)',
+            backdropFilter: 'blur(14px) saturate(150%)',
+          }}
+          className="w-full px-4 py-3 rounded-xl bg-white/65 border border-white/80 shadow-md text-gray-900 font-bold text-sm flex items-center justify-between transition active:scale-[0.99]"
+        >
+          <span>
+            🛍️ {isMobileCatalogOpen ? 'Tutup Katalog & Scanner' : 'Buka Katalog & Scanner'}
+          </span>
+          <span className="text-xs font-semibold px-2.5 py-0.5 rounded-lg bg-blue-600/85 text-white">
+            {isMobileCatalogOpen ? '▲ Tutup' : '▼ Pilih'}
+          </span>
+        </button>
 
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-3 gap-2">
-        <div className="flex items-center space-x-3 overflow-x-auto max-w-full pb-1 sm:pb-0">
-          <h2 className="text-base font-bold text-gray-800 whitespace-nowrap">
-            Katalog Produk <span className="text-xs font-normal text-gray-500">({filteredProducts.length})</span>
-          </h2>
-
-          <div className="flex space-x-1 border-l pl-3 overflow-x-auto">
-            <button
-              type="button"
-              onClick={() => setSelectedCategory('Semua')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition ${
-                selectedCategory === 'Semua'
-                  ? 'bg-blue-600 text-white shadow-sm'
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              }`}
+        {/* Panel Dropdown Mode Glassmorphism di HP */}
+        {isMobileCatalogOpen && (
+          <div
+            style={{
+              WebkitBackdropFilter: 'blur(16px) saturate(150%)',
+              backdropFilter: 'blur(16px) saturate(150%)',
+            }}
+            className="mt-2 p-3 rounded-2xl bg-white/60 border border-white/80 shadow-2xl max-h-[65vh] overflow-y-auto space-y-3"
+          >
+            <form
+              onSubmit={handleBarcodeSubmit}
+              className="bg-blue-50/90 p-2.5 rounded-xl border border-blue-100 flex flex-col sm:flex-row items-stretch sm:items-center gap-2"
             >
-              Semua
-            </button>
-            {categories.map((cat) => (
+              <span className="text-xs sm:text-sm font-bold text-blue-600 whitespace-nowrap">📷 Scan Barcode:</span>
+              <input
+                type="text"
+                placeholder="Arahkan scanner atau ketik barcode/SKU lalu Enter..."
+                value={barcodeInput}
+                onChange={(e) => setBarcodeInput(e.target.value)}
+                className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-800 text-sm font-mono"
+              />
+            </form>
+
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center space-x-2 overflow-x-auto max-w-full pb-1">
+                <h2 className="text-sm font-bold text-gray-800 whitespace-nowrap">
+                  Katalog Produk <span className="text-xs font-normal text-gray-500">({filteredProducts.length})</span>
+                </h2>
+
+                <div className="flex space-x-1 border-l pl-2 overflow-x-auto">
+                  <button
+                    type="button"
+                    onClick={() => setSelectedCategory('Semua')}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition ${
+                      selectedCategory === 'Semua'
+                        ? 'bg-blue-600 text-white shadow-sm'
+                        : 'bg-gray-100/80 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    Semua
+                  </button>
+                  {categories.map((cat) => (
+                    <button
+                      key={cat.id}
+                      type="button"
+                      onClick={() => setSelectedCategory(cat.name)}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition ${
+                        selectedCategory === cat.name
+                          ? 'bg-blue-600 text-white shadow-sm'
+                          : 'bg-gray-100/80 text-gray-700 hover:bg-gray-200'
+                      }`}
+                    >
+                      {cat.name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <input
+                type="text"
+                placeholder="🔍 Ketik nama/SKU..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="px-3 py-1.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white/90 text-gray-800 text-sm w-full shadow-sm"
+              />
+            </div>
+
+            <div className="flex flex-col gap-2">
+              {filteredProducts.length === 0 ? (
+                <div className="text-center py-8 text-gray-500 text-sm">
+                  Produk tidak ditemukan dalam pencarian.
+                </div>
+              ) : (
+                filteredProducts.map((product) => {
+                  const displayPrice = product.sell_price ?? product.price ?? 0
+                  return (
+                    <button
+                      key={product.id}
+                      type="button"
+                      onClick={() => {
+                        addToCart(product)
+                        setIsMobileCatalogOpen(false)
+                      }}
+                      className="bg-white/85 p-3 rounded-xl shadow-sm hover:shadow-md hover:border-blue-300 transition text-left flex flex-row justify-between items-center border border-white/80 cursor-pointer active:scale-95 gap-3"
+                    >
+                      <div className="min-w-0 flex-1">
+                        <p className="font-semibold text-gray-800 text-xs line-clamp-2">{product.name}</p>
+                        {product.sku && <p className="text-[10px] text-blue-600 font-mono mt-0.5">SKU: {product.sku}</p>}
+                        {product.barcode && <p className="text-[10px] text-gray-500 font-mono">BC: {product.barcode}</p>}
+                        <p className={`text-[11px] mt-1 ${product.stock > 0 ? 'text-gray-600' : 'text-red-500 font-bold'}`}>
+                          Stok: {product.stock} {product.unit || 'pcs'}
+                        </p>
+                      </div>
+                      <p className="text-blue-600 font-bold text-xs shrink-0 whitespace-nowrap">
+                        Rp {displayPrice.toLocaleString('id-ID')}
+                      </p>
+                    </button>
+                  )
+                })
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Tampilan Normal di Tablet / Laptop (md ke atas) */}
+      <div className="hidden md:flex md:flex-col md:flex-1 md:overflow-y-auto">
+        <form onSubmit={handleBarcodeSubmit} className="mb-3 bg-blue-50 p-3 rounded-xl border border-blue-100 flex items-center space-x-2">
+          <span className="text-sm font-bold text-blue-600 whitespace-nowrap">📷 Scan Barcode:</span>
+          <input
+            ref={barcodeInputRef}
+            type="text"
+            placeholder="Arahkan scanner atau ketik barcode/SKU lalu Enter..."
+            value={barcodeInput}
+            onChange={(e) => setBarcodeInput(e.target.value)}
+            className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-800 text-sm font-mono"
+          />
+        </form>
+
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-3 gap-2">
+          <div className="flex items-center space-x-3 overflow-x-auto max-w-full pb-1 sm:pb-0">
+            <h2 className="text-base font-bold text-gray-800 whitespace-nowrap">
+              Katalog Produk <span className="text-xs font-normal text-gray-500">({filteredProducts.length})</span>
+            </h2>
+
+            <div className="flex space-x-1 border-l pl-3 overflow-x-auto">
               <button
-                key={cat.id}
                 type="button"
-                onClick={() => setSelectedCategory(cat.name)}
+                onClick={() => setSelectedCategory('Semua')}
                 className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition ${
-                  selectedCategory === cat.name
+                  selectedCategory === 'Semua'
                     ? 'bg-blue-600 text-white shadow-sm'
                     : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                 }`}
               >
-                {cat.name}
+                Semua
               </button>
-            ))}
+              {categories.map((cat) => (
+                <button
+                  key={cat.id}
+                  type="button"
+                  onClick={() => setSelectedCategory(cat.name)}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition ${
+                    selectedCategory === cat.name
+                      ? 'bg-blue-600 text-white shadow-sm'
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  }`}
+                >
+                  {cat.name}
+                </button>
+              ))}
+            </div>
           </div>
+
+          <input
+            type="text"
+            placeholder="🔍 Ketik nama/SKU..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="px-3 py-1.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-800 text-sm w-full sm:w-48 shadow-sm"
+          />
         </div>
 
-        <input
-          type="text"
-          placeholder="🔍 Ketik nama/SKU..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="px-3 py-1.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-800 text-sm w-full sm:w-48 shadow-sm"
-        />
-      </div>
-
-      {/* Mode HP (< md): List tanpa gambar | Mode Tablet 8"+ / Desktop (>= md): Grid 3 kolom */}
-      <div className="flex flex-col md:grid md:grid-cols-3 gap-2 md:gap-3 overflow-y-auto flex-1 pr-1">
-        {filteredProducts.length === 0 ? (
-          <div className="md:col-span-3 text-center py-10 text-gray-400 text-sm">
-            Produk tidak ditemukan dalam pencarian.
-          </div>
-        ) : (
-          filteredProducts.map((product) => {
-            const displayPrice = product.sell_price ?? product.price ?? 0
-            return (
-              <button
-                key={product.id}
-                type="button"
-                onClick={() => addToCart(product)}
-                className="bg-white p-3 rounded-xl shadow-sm hover:shadow-md hover:border-blue-300 transition text-left flex flex-row md:flex-col justify-between items-center md:items-stretch border border-gray-200 cursor-pointer active:scale-95 gap-3"
-              >
-                <div className="min-w-0 flex-1">
-                  <div className="hidden md:flex w-full h-28 sm:h-32 bg-gray-50 rounded-lg mb-2 overflow-hidden items-center justify-center">
-                    {product.image_url ? (
-                      <img src={product.image_url} alt={product.name} className="w-full h-full object-cover" />
-                    ) : (
-                      <span className="text-xs text-gray-400">📷 Tanpa Foto</span>
-                    )}
+        {/* Mode Tablet 8"+ / Desktop (>= md): Grid 3 kolom */}
+        <div className="grid grid-cols-3 gap-3 overflow-y-auto flex-1 pr-1">
+          {filteredProducts.length === 0 ? (
+            <div className="col-span-3 text-center py-10 text-gray-400 text-sm">
+              Produk tidak ditemukan dalam pencarian.
+            </div>
+          ) : (
+            filteredProducts.map((product) => {
+              const displayPrice = product.sell_price ?? product.price ?? 0
+              return (
+                <button
+                  key={product.id}
+                  type="button"
+                  onClick={() => addToCart(product)}
+                  className="bg-white p-3 rounded-xl shadow-sm hover:shadow-md hover:border-blue-300 transition text-left flex flex-col justify-between items-stretch border border-gray-200 cursor-pointer active:scale-95 gap-3"
+                >
+                  <div className="min-w-0 flex-1">
+                    <div className="flex w-full h-28 sm:h-32 bg-gray-50 rounded-lg mb-2 overflow-hidden items-center justify-center">
+                      {product.image_url ? (
+                        <img src={product.image_url} alt={product.name} className="w-full h-full object-cover" />
+                      ) : (
+                        <span className="text-xs text-gray-400">📷 Tanpa Foto</span>
+                      )}
+                    </div>
+                    <p className="font-semibold text-gray-800 text-xs line-clamp-2">{product.name}</p>
+                    {product.sku && <p className="text-[10px] text-blue-500 font-mono mt-0.5">SKU: {product.sku}</p>}
+                    {product.barcode && <p className="text-[10px] text-gray-400 font-mono">BC: {product.barcode}</p>}
+                    <p className={`text-[11px] mt-1 ${product.stock > 0 ? 'text-gray-500' : 'text-red-500 font-bold'}`}>
+                      Stok: {product.stock} {product.unit || 'pcs'}
+                    </p>
                   </div>
-                  <p className="font-semibold text-gray-800 text-xs line-clamp-2">{product.name}</p>
-                  {product.sku && <p className="text-[10px] text-blue-500 font-mono mt-0.5">SKU: {product.sku}</p>}
-                  {product.barcode && <p className="text-[10px] text-gray-400 font-mono">BC: {product.barcode}</p>}
-                  <p className={`text-[11px] mt-1 ${product.stock > 0 ? 'text-gray-500' : 'text-red-500 font-bold'}`}>
-                    Stok: {product.stock} {product.unit || 'pcs'}
+                  <p className="text-blue-600 font-bold mt-3 text-xs shrink-0 whitespace-nowrap">
+                    Rp {displayPrice.toLocaleString('id-ID')}
                   </p>
-                </div>
-                <p className="text-blue-600 font-bold md:mt-3 text-xs shrink-0 whitespace-nowrap">
-                  Rp {displayPrice.toLocaleString('id-ID')}
-                </p>
-              </button>
-            )
-          })
-        )}
+                </button>
+              )
+            })
+          )}
+        </div>
       </div>
     </div>
 
