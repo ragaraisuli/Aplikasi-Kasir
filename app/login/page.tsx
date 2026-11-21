@@ -66,7 +66,7 @@ export default function LoginPage() {
     <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
       <div className="bg-white p-8 rounded-2xl shadow-md max-w-md w-full space-y-6 border border-gray-200">
         <div className="text-center space-y-1">
-          <h1 className="text-2xl font-bold text-blue-600">Aplikasi Kasir POS</h1>
+          <h1 className="text-2xl font-bold text-blue-600">Access Kasir</h1>
           <p className="text-xs text-gray-500">
             {isForgotPassword ? 'Reset Password Akun Anda' : 'Silakan login untuk mengakses sistem POS'}
           </p>
